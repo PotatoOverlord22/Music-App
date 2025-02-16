@@ -1,3 +1,4 @@
+import { FluentProvider } from '@fluentui/react-components';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './Components/App/App';
@@ -9,6 +10,8 @@ const root = ReactDOM.createRoot(
 
 root.render(
     <React.StrictMode>
-        <App />
+        <FluentProvider>
+            <App />
+        </FluentProvider>
     </React.StrictMode>
 );
