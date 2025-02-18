@@ -1,18 +1,23 @@
 import { InteractionType } from "@azure/msal-browser";
 import { useMsalAuthentication } from "@azure/msal-react";
+import { FluentProvider, webLightTheme } from "@fluentui/react-components";
 import { BrowserRouter, Route, Routes } from "react-router";
-import { msalTokenScopes } from "../../Auth/authConfig";
 import { InternalRoutes } from "../../Library/Enums/InternalRoutes";
 import { Home } from "../Home/home";
+import { ServicesProvider } from "../Services/ServicesContext/servicesContext";
 
-const App = (): JSX.Element => {
-    useMsalAuthentication(InteractionType.Redirect, { scopes: msalTokenScopes });
+const App: React.FC = (): JSX.Element => {
+    useMsalAuthentication(InteractionType.Redirect);
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route path={InternalRoutes.Home} element={<Home />} />
-            </Routes>
-        </BrowserRouter>
+        <FluentProvider theme={webLightTheme}>
+            <ServicesProvider>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path={InternalRoutes.Home} element={<Home />} />
+                    </Routes>
+                </BrowserRouter>
+            </ServicesProvider>
+        </FluentProvider>
     );
 };
 

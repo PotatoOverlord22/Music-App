@@ -1,5 +1,6 @@
 import { PublicClientApplication } from "@azure/msal-browser";
 import { MsalProvider } from "@azure/msal-react";
+import React from "react";
 import { createRoot, Root } from "react-dom/client";
 import { msalConfig } from "./Auth/authConfig";
 import App from "./Components/App/App";
@@ -30,7 +31,9 @@ initializeMsal().then(() => {
     const root: Root = createRoot(rootElement);
     root.render(
         <MsalProvider instance={msalInstance}>
-            <App />
+            <React.StrictMode>
+                <App />
+            </React.StrictMode>
         </MsalProvider>
     );
 });

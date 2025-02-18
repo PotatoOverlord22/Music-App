@@ -6,4 +6,15 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="NLog" Version="5.4.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MM.DAL\MM.DAL.csproj" />
+    <ProjectReference Include="..\MM.Library\MM.Library.csproj" />
+  </ItemGroup>
+
 </Project>

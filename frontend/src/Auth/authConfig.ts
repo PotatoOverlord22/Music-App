@@ -13,14 +13,14 @@ export const msalConfig: Configuration = {
         navigateToLoginRequestUrl: true // Add this to ensure proper navigation
     },
     cache: {
-        cacheLocation: "sessionStorage",
+        cacheLocation: "localStorage",
         storeAuthStateInCookie: false,
     },
     system: {
         loggerOptions: {
-            loggerCallback: (level, message, containsPii) => {
-                console.log(message);
-            },
+            // loggerCallback: (level, message, containsPii) => {
+            //     console.log(message);
+            // },
             piiLoggingEnabled: false,
             logLevel: LogLevel.Verbose
         }

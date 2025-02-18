@@ -1,0 +1,1 @@
+export const UNDEFINED_CONTEXT_ERROR_MESSAGE: string = "Services context is undefined.";
