@@ -1,6 +1,5 @@
 import { UseMutationOptions } from "@tanstack/react-query";
 import { BaseService } from "./baseService";
-import { Song } from "../../Models/Song";
 
 export class MusicService extends BaseService {
     constructor() {

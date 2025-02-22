@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Context, createContext, useContext } from "react";
-import { UNDEFINED_CONTEXT_ERROR_MESSAGE } from "../../../Library/constants";
+import { Context, createContext, JSX, useContext } from "react";
+import { UNDEFINED_CONTEXT_ERROR_MESSAGE } from "../../Library/constants";
 import { MusicService } from "../musicService";
 import { IServices, IServicesProviderProps } from "./servicesContext.types";
 

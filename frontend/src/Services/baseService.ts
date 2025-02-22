@@ -1,6 +1,6 @@
 import { UseMutationOptions, UseQueryOptions } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-import { HttpVerbs } from "../../Library/Enums/HttpVerbs";
+import { HttpVerbs } from "../Library/Enums/HttpVerbs";
 
 export class BaseService {
     private readonly _localhost: string = "https://localhost:7018";
@@ -10,7 +10,7 @@ export class BaseService {
         this._serviceUrl = serviceUrl;
     };
 
-    protected CreateGetQuery = <T, E = AxiosError<string, any>>(methodUrl: string): UseQueryOptions<T, E> => {
+    protected CreateGetQuery = <T, E = AxiosError<string, unknown>>(methodUrl: string): UseQueryOptions<T, E> => {
         const url: string = `${this._localhost}/${this._serviceUrl}/${methodUrl}`;
 
         return {
@@ -60,7 +60,7 @@ export class BaseService {
         };
     };
 
-    private readonly createHashKey = (url: string, data?: any): string => {
+    private readonly createHashKey = (url: string, data?: unknown): string => {
         const dataString: string = data ? JSON.stringify(data) : '';
         const combinedString: string = `${url}:${dataString}`;
         const hash: number = this.hashStringToNumber(combinedString);
@@ -77,7 +77,7 @@ export class BaseService {
         return hash >>> 0;
     };
 
-    private readonly ExecuteRequest = async <T>(url: string, httpVerb: HttpVerbs, data?: any, isFile?: boolean): Promise<T> => {
+    private readonly ExecuteRequest = async <T>(url: string, httpVerb: HttpVerbs, data?: unknown, isFile?: boolean): Promise<T> => {
         const config: AxiosRequestConfig = {
             url: url,
             method: httpVerb,
@@ -91,7 +91,7 @@ export class BaseService {
 
         return new Promise<T>((resolve, reject) => {
             axios.request<T>(config)
-                .then((response: AxiosResponse<T, any>) => {
+                .then((response: AxiosResponse<T, unknown>) => {
                     return resolve(response?.data);
                 })
                 .catch((error: AxiosError) => {

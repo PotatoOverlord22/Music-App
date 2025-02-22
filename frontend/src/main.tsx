@@ -2,8 +2,8 @@ import { PublicClientApplication } from "@azure/msal-browser";
 import { MsalProvider } from "@azure/msal-react";
 import React from "react";
 import { createRoot, Root } from "react-dom/client";
+import App from "./App";
 import { msalConfig } from "./Auth/authConfig";
-import App from "./Components/App/App";
 
 const msalInstance = new PublicClientApplication(msalConfig);
 

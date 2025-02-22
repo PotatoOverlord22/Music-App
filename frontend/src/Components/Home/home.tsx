@@ -1,9 +1,10 @@
-import { Button, Label } from "@fluentui/react-components";
-import { useMutation, UseMutationResult } from "@tanstack/react-query";
+import { useMutation, UseMutationResult } from '@tanstack/react-query';
 import { saveAs } from 'file-saver';
-import { useEffect, useRef, useState } from "react";
-import { useServicesContext } from "../Services/ServicesContext/servicesContext";
-import { IServices } from "../Services/ServicesContext/servicesContext.types";
+import { JSX, useEffect, useRef, useState } from "react";
+import { useServicesContext } from "../../Services/ServicesContext/servicesContext";
+import { IServices } from "../../Services/ServicesContext/servicesContext.types";
+import Button from '@mui/material/Button';
+import { Typography } from '@mui/material';
 
 export const Home = (): JSX.Element => {
     const services: IServices = useServicesContext();
@@ -18,9 +19,9 @@ export const Home = (): JSX.Element => {
         }
     }, [transformSongMutation.data]);
 
-    const onUploadFile = (): void => {
-        fileInputRef.current?.click();
-    };
+    // const onUploadFile = (): void => {
+    //     fileInputRef.current?.click();
+    // };
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setFile(event.target.files ? event.target.files[0] : null);
@@ -45,11 +46,13 @@ export const Home = (): JSX.Element => {
                 onChange={handleFileChange}
             >
             </input>
-            <Button onClick={onUploadFile} appearance="primary">
+            <Button variant="contained">
                 Upload file
             </Button>
-            <Label>{file ? file.name : "Choose a file"}</Label>
-            <Button onClick={transformSong} appearance="primary" disabled={!file}>
+            <Typography variant="h6">
+                {file ? file.name : "No file selected"}
+            </Typography>
+            <Button onClick={transformSong} variant="contained" disabled={!file}>
                 Transform song
             </Button>
         </div>

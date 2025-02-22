@@ -1,6 +1,6 @@
 import { AccountInfo, Configuration, IPublicClientApplication, LogLevel } from "@azure/msal-browser";
 
-const clientId: string = process.env.REACT_APP_AUTH_CLIENTID ?? "";
+const clientId: string = import.meta.env.VITE_AUTH_CLIENTID;
 const msalAuthorityURL: string = 'https://login.microsoftonline.com/common';
 const currentUrl: string = window.location.origin;
 
@@ -35,4 +35,4 @@ export const onSignOut = (msalInstance: IPublicClientApplication, accountinfo: A
         postLogoutRedirectUri: msalConfig.auth.postLogoutRedirectUri,
     };
     msalInstance.logoutRedirect(logoutRequest);
-}
+};
