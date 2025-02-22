@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MM.BLL.Context;
+using MM.Library.Models;
 
 namespace MusicMania.Controllers
 {
@@ -22,7 +23,7 @@ namespace MusicMania.Controllers
         {
             try
             {
-                return File(_blContext.MusicBL.TransformSong(file), file.ContentType);
+                return File(_blContext.MusicBL.TransformSong(file), file.ContentType, $"{file.FileName}-transformed.mp3");
             }
             catch (Exception ex)
             {

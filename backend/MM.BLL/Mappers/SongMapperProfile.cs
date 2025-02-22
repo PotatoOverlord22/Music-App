@@ -9,27 +9,12 @@ namespace MM.BLL.Mappers
     {
         public SongMapperProfile()
         {
-            CreateMap<SongDTO, Song>();
-            CreateMap<Song, SongDTO>();
+            CreateMap<FileMetadata, Song>();
+            CreateMap<Song, FileMetadata>();
 
-            CreateMap<IFormFile, SongDTO>()
-                .ForMember(dest => dest.Content, opt => opt.MapFrom(src => ConvertToByteArray(src)))
+            CreateMap<IFormFile, FileMetadata>()
                 .ForMember(dest => dest.ContentType, opt => opt.MapFrom(src => src.ContentType))
                 .ForMember(dest => dest.FileName, opt => opt.MapFrom(src => src.FileName));
-        }
-
-        private byte[] ConvertToByteArray(IFormFile file)
-        {
-            if (file == null || file.Length == 0)
-            {
-                return null;
-            }
-
-            using (var memoryStream = new MemoryStream())
-            {
-                file.CopyTo(memoryStream);
-                return memoryStream.ToArray();
-            }
         }
     }
 }

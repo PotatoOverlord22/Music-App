@@ -1,5 +1,4 @@
-export type Song = {
-    Content: Blob;
+export type FileMetadata = {
     ContentType: string;
     FileName: string;
 };

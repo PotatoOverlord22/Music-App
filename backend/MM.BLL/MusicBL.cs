@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using MM.BLL.Context;
 using MM.BLL.Mappers;
 using MM.Library.Models;
@@ -15,7 +16,7 @@ namespace MM.BLL
         #endregion Constructor
 
         #region Methods
-        public Byte[] TransformSong(IFormFile file)
+        public byte[] TransformSong(IFormFile file)
         {
             if (file == null || file.Length == 0)
             {
