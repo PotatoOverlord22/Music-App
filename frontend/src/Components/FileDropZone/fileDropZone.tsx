@@ -1,8 +1,9 @@
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import SendIcon from '@mui/icons-material/Send';
 import { Button, CardContent, Typography } from "@mui/material";
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { DRAG_AND_DROP_FILE_TEXT, UPLOAD_FILE_TEXT } from "../../Library/resources";
+import { DRAG_AND_DROP_FILE_TEXT } from "../../Library/resources";
 import { CardActionsContainer, CardContentContainer, DropZoneCard, UploadFileText } from "./fileDropZone.styles";
 import { FileDropZoneProps } from "./fileDropZone.types";
 
@@ -18,7 +19,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = (props: FileDropZonePro
     const { getRootProps, getInputProps } = useDropzone({
         onDrop,
         multiple: false,
-        accept: { 'audio/mpeg': []}
+        accept: { 'audio/mpeg': [] }
     });
 
     const onUploadClick = (): void => {
@@ -47,10 +48,13 @@ export const FileDropZone: React.FC<FileDropZoneProps> = (props: FileDropZonePro
                     variant="contained"
                     color="primary"
                     disabled={isButtonDisabled}
+                    startIcon={<SendIcon />}
+                    loading={props.isLoading}
+                    loadingPosition="start"
                     onClick={onUploadClick}
                 >
                     <Typography variant="body1">
-                        {UPLOAD_FILE_TEXT}
+                        {props.buttonText ?? ""}
                     </Typography>
                 </Button>
             </CardActionsContainer>
