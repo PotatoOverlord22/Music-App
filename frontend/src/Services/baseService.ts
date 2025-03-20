@@ -86,7 +86,7 @@ export class BaseService {
             headers: {
                 "Content-Type": isFile ? "multipart/form-data" : "application/json"
             },
-            responseType: "json"
+            responseType: isFile ? "blob" : "json"
         };
 
         return new Promise<T>((resolve, reject) => {

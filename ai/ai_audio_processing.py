@@ -182,7 +182,7 @@ def process_audio():
     if file.filename == '':
         return jsonify({'error': 'No file selected'}), 400
     
-    intensity = float(request.form.get('intensity', 5.0))
+    intensity = float(request.form.get('intensity', 1.0))
     segment_duration = int(request.form.get('segment_duration', 30))
     overlap = int(request.form.get('overlap', 5))
     
