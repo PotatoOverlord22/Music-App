@@ -8,6 +8,10 @@ from scipy import signal
 from io import BytesIO
 import tempfile
 
+#
+#   Run with command from current folder: & c:/venvs/ai/Scripts/python.exe c:/Users/rauli/licenta/app/ai/ai_audio_processing.py
+#
+
 app = Flask(__name__)
 
 MODEL_PATH = "./saved_models/CONEqNet.keras"

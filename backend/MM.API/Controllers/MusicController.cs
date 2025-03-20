@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MM.BLL.Context;
-using MM.Library.Models;
 
 namespace MusicMania.Controllers
 {
@@ -19,11 +18,12 @@ namespace MusicMania.Controllers
         [Consumes("multipart/form-data")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult TransformSong([FromForm] IFormFile file)
+        public async Task<IActionResult> TransformSong([FromForm] IFormFile file)
         {
             try
             {
-                return File(_blContext.MusicBL.TransformSong(file), file.ContentType, $"{file.FileName}-transformed.mp3");
+                byte[] transformedfile = await _blContext.MusicBL.TransformSong(file);
+                return File(transformedfile, "audio/mpeg", $"{file.FileName}-transformed.mp3");
             }
             catch (Exception ex)
             {
