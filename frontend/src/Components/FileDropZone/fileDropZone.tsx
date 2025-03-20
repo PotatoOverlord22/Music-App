@@ -29,6 +29,8 @@ export const FileDropZone: React.FC<FileDropZoneProps> = (props: FileDropZonePro
         props.onUpload(selectedFile);
     };
 
+    const isButtonDisabled: boolean = !selectedFile || (props.isButtonDisabled ?? false);
+
     return (
         <DropZoneCard>
             <CardContent>
@@ -44,7 +46,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = (props: FileDropZonePro
                 <Button
                     variant="contained"
                     color="primary"
-                    disabled={!selectedFile}
+                    disabled={isButtonDisabled}
                     onClick={onUploadClick}
                 >
                     <Typography variant="body1">
