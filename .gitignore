@@ -42,3 +42,6 @@
 # Datasets
 ai/Data/
 ai/music/
+
+# Pycache
+**/__pycache__
