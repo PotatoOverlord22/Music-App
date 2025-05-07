@@ -26,10 +26,7 @@ from audio_processing_service import (
     TIME_MAP
 )
 
-#
-#   Run with command from current folder: & c:/venvs/ai/Scripts/python.exe c:/Users/rauli/licenta/app/ai/ai_audio_processing.py
-#
-
+#   run with: & c:/venvs/ai/Scripts/python.exe c:/Users/rauli/licenta/app/ai/ai_audio_processing.py
 app = Flask(__name__)
 
 @app.route('/process_audio', methods=['POST'])
@@ -122,11 +119,6 @@ def recommend_genre_endpoint():
         print(traceback.format_exc())
         return jsonify({'error': str(e)}), 500
 
-@app.route('/health', methods=['GET'])
-def health_check():
-    """Simple health check endpoint to verify the API is running."""
-    return jsonify({'status': 'healthy', 'message': 'Audio processing API is operational'})
-
 # NEEDS TO BE TESTED
 @app.route('/process_audio_with_recommendation', methods=['POST'])
 def process_audio_with_recommendation():
@@ -212,6 +204,11 @@ def process_audio_with_recommendation():
         import traceback
         print(traceback.format_exc())
         return jsonify({'error': str(e)}), 500
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Simple health check endpoint to verify the API is running."""
+    return jsonify({'status': 'healthy', 'message': 'Audio processing API is operational'})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)

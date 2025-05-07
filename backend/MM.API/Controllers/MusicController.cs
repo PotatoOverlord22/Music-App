@@ -7,11 +7,11 @@ namespace MusicMania.Controllers
     [ApiController]
     public class MusicController : ControllerBase
     {
-        private BLContext _blContext;
+        private BLContext blContext;
 
         public MusicController(BLContext blContext)
         {
-            _blContext = blContext;
+            this.blContext = blContext;
         }
 
         [HttpPost("TransformSong")]
@@ -22,8 +22,27 @@ namespace MusicMania.Controllers
         {
             try
             {
-                byte[] transformedfile = await _blContext.MusicBL.TransformSong(file);
+                byte[] transformedfile = await blContext.MusicBL.TransformSong(file);
                 return File(transformedfile, "audio/mpeg", $"{file.FileName}-transformed.mp3");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("TransformSongWithContext")]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> TransformSongWithContext([FromForm] IFormFile file, [FromForm] string timeOfDay, [FromForm] string mood)
+        {
+            try
+            {
+                (byte[] transformedSong, string recommendedGenre) = await blContext.MusicBL.TransformSongWithContext(file, timeOfDay, mood);
+                Response.Headers.Append("X-Recommended-Genre", recommendedGenre);
+
+                return File(transformedSong, "audio/mpeg", $"{file.FileName}-transformed.mp3");
             }
             catch (Exception ex)
             {
