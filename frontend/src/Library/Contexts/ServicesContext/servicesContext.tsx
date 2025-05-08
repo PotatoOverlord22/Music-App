@@ -1,19 +1,19 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Context, createContext, JSX, useContext } from "react";
-import { UNDEFINED_CONTEXT_ERROR_MESSAGE } from "../../Library/constants";
-import { MusicService } from "../musicService";
-import { IServices, IServicesProviderProps } from "./servicesContext.types";
+import { MusicService } from "../../../Services/musicService";
+import { UNDEFINED_CONTEXT_ERROR_MESSAGE } from "../../constants";
+import { Services } from "./servicesContext.types";
 
 const queryClient: QueryClient = new QueryClient();
 const musicService: MusicService = new MusicService();
 
-const services: IServices = {
+const services: Services = {
     MusicService: musicService,
 };
 
-const ServicesContext: Context<IServices | undefined> = createContext<IServices | undefined>(undefined);
+const ServicesContext: Context<Services | undefined> = createContext<Services | undefined>(undefined);
 
-export const ServicesProvider = (props: IServicesProviderProps): JSX.Element => {
+export const ServicesProvider = (props: React.PropsWithChildren): JSX.Element => {
     return (
         <ServicesContext.Provider value={services}>
             <QueryClientProvider client={queryClient}>
@@ -23,8 +23,8 @@ export const ServicesProvider = (props: IServicesProviderProps): JSX.Element => 
     );
 };
 
-export const useServicesContext = (): IServices => {
-    const context: IServices | undefined = useContext(ServicesContext);
+export const useServicesContext = (): Services => {
+    const context: Services | undefined = useContext(ServicesContext);
     if (context === undefined) {
         throw new Error(UNDEFINED_CONTEXT_ERROR_MESSAGE);
     }

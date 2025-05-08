@@ -4,9 +4,10 @@ import { Box, createTheme, SxProps, ThemeProvider } from "@mui/material";
 import { JSX } from "react";
 import { BrowserRouter, Route, Routes } from "react-router";
 import { Home } from "./Components/Home/home";
+import { PageContent } from "./Components/PageContent/pageContent";
 import { TopBar } from "./Components/TopBar/topBar";
+import { ServicesProvider } from "./Library/Contexts/ServicesContext/servicesContext";
 import { InternalRoutes } from "./Library/Enums/InternalRoutes";
-import { ServicesProvider } from "./Services/ServicesContext/servicesContext";
 
 const darkTheme = createTheme({
     colorSchemes: {
@@ -28,9 +29,11 @@ const App: React.FC = (): JSX.Element => {
                 <BrowserRouter>
                     <Box sx={backgroudProps}>
                         <TopBar />
-                        <Routes>
-                            <Route path={InternalRoutes.Home} element={<Home />} />
-                        </Routes>
+                        <PageContent>
+                            <Routes>
+                                <Route path={InternalRoutes.Home} element={<Home />} />
+                            </Routes>
+                        </PageContent>
                     </Box>
                 </BrowserRouter>
             </ServicesProvider>

@@ -5,21 +5,28 @@ namespace MM.BLL.Context
     public class BLContext : IDisposable
     {
         #region Members
-        private Lazy<Logger> _logger;
-        private Lazy<MusicBL> _musicBL;
+        private Lazy<Logger> logger;
+
+        private Lazy<MusicBL> musicBL;
+
+        private Lazy<GeneralDataBL> generalDataBL;
         #endregion Members
 
         #region Constructor
         public BLContext()
         {
-            _logger = new Lazy<Logger>(() => LogManager.GetCurrentClassLogger());
-            _musicBL = new Lazy<MusicBL>(() => new MusicBL(this));
+            logger = new Lazy<Logger>(() => LogManager.GetCurrentClassLogger());
+            musicBL = new Lazy<MusicBL>(() => new MusicBL(this));
+            generalDataBL = new Lazy<GeneralDataBL>(() => new GeneralDataBL(this));
         }
         #endregion Constructor
 
         #region Properties
-        public Logger Logger => _logger.Value;
-        public MusicBL MusicBL => _musicBL.Value;
+        public Logger Logger => logger.Value;
+
+        public MusicBL MusicBL => musicBL.Value;
+
+        public GeneralDataBL GeneralDataBL => generalDataBL.Value;
         #endregion Properties
 
         #region Methods
@@ -30,14 +37,19 @@ namespace MM.BLL.Context
                 return;
             }
 
-            if (_logger.IsValueCreated)
+            if (logger.IsValueCreated)
             {
-                _logger = null;
+                logger = null;
             }
 
-            if (_musicBL.IsValueCreated)
+            if (musicBL.IsValueCreated)
             {
-                _musicBL = null;
+                musicBL = null;
+            }
+
+            if (generalDataBL.IsValueCreated)
+            {
+                generalDataBL = null;
             }
         }
         #endregion Methods

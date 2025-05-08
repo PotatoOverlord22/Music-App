@@ -18,7 +18,10 @@ namespace MM.BLL.Context
         #endregion Constructor
 
         #region Methods
-        protected abstract void ConfigureMapper();
+        protected virtual void ConfigureMapper()
+        {
+            return;
+        }
 
         protected void LogAndThrowValidationException(string message, string? exceptionMessage = null)
         {

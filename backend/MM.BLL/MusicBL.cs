@@ -11,7 +11,7 @@ namespace MM.BLL
     public class MusicBL : BLObject
     {
         #region Members
-        private static readonly string baseUrl = "http://localhost:5000";
+        private static readonly string flaskBaseUrl = "http://localhost:5000";
         private readonly HttpClient httpClient;
         #endregion Members
 
@@ -30,7 +30,7 @@ namespace MM.BLL
                 LogAndThrowValidationException("No file received");
             }
 
-            Uri proccessAudioEndpoint = new Uri($"{baseUrl}/process_audio");
+            Uri proccessAudioEndpoint = new Uri($"{flaskBaseUrl}/process_audio");
             HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, proccessAudioEndpoint);
             requestMessage.Headers.ExpectContinue = false;
 
@@ -74,7 +74,7 @@ namespace MM.BLL
                 LogAndThrowValidationException("No context received");
             }
 
-            if (!EnumUtils.IsValueInEnumCaseInsensitive<TimeOfDay>(timeOfDay))
+            if (!EnumUtils.IsValueInEnumCaseInsensitive<TimesOfDay>(timeOfDay))
             {
                 LogAndThrowValidationException($"Invalid time of day: {timeOfDay}");
             }
@@ -86,8 +86,8 @@ namespace MM.BLL
 
             Dictionary<string, string> formFields = new Dictionary<string, string>
             {
-                { "time_of_day", timeOfDay },
-                { "mood", mood }
+                { "time_of_day", timeOfDay.ToLower() },
+                { "mood", mood.ToLower() }
             };
 
             HttpResponseMessage response = await PostFormAsync("process_audio_with_recommendation", file, formFields);
@@ -112,7 +112,7 @@ namespace MM.BLL
             if (string.IsNullOrWhiteSpace(endpoint))
                 throw new ArgumentException("Endpoint cannot be null or whitespace.", nameof(endpoint));
 
-            var uri = new Uri($"{baseUrl}/{endpoint.TrimStart('/')}");
+            var uri = new Uri($"{flaskBaseUrl}/{endpoint.TrimStart('/')}");
 
             using var multipart = new MultipartFormDataContent();
 

@@ -1,6 +1,6 @@
 ﻿namespace MM.Library.Enums
 {
-    public enum TimeOfDay
+    public enum TimesOfDay
     {
         Morning,
         Afternoon,

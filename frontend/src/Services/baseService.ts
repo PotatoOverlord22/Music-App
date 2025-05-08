@@ -1,9 +1,10 @@
 import { UseMutationOptions, UseQueryOptions } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { HttpVerbs } from "../Library/Enums/HttpVerbs";
+import { BACKEND_URL } from "../Library/constants";
 
 export class BaseService {
-    private readonly serverUrl: string = "https://localhost:7018";
+    private readonly serverUrl: string = BACKEND_URL;
     private readonly serviceUrl: string;
 
     constructor(serviceUrl: string) {
