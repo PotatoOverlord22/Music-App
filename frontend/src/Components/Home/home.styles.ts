@@ -1,8 +1,10 @@
-import { CSSProperties } from "react";
+import { makeStyles } from "@mui/styles";
 
-export const fileDropZoneContainerStyles: CSSProperties = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center'
-};
+export const useHomeStyles = makeStyles({
+    fileDropZoneContainerStyles: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
+    }
+});

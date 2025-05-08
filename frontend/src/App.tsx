@@ -1,12 +1,12 @@
 import { InteractionType } from "@azure/msal-browser";
 import { useMsalAuthentication } from "@azure/msal-react";
-import { createTheme, ThemeProvider } from "@mui/material";
+import { Box, createTheme, SxProps, ThemeProvider } from "@mui/material";
 import { JSX } from "react";
 import { BrowserRouter, Route, Routes } from "react-router";
 import { Home } from "./Components/Home/home";
+import { TopBar } from "./Components/TopBar/topBar";
 import { InternalRoutes } from "./Library/Enums/InternalRoutes";
 import { ServicesProvider } from "./Services/ServicesContext/servicesContext";
-import { TopBar } from "./Components/TopBar/topBar";
 
 const darkTheme = createTheme({
     colorSchemes: {
@@ -14,16 +14,24 @@ const darkTheme = createTheme({
     },
 });
 
+const backgroudProps: SxProps = {
+    display: "flex",
+    flexDirection: "column",
+    minHeight: "100vh",
+};
+
 const App: React.FC = (): JSX.Element => {
     useMsalAuthentication(InteractionType.Redirect);
     return (
         <ThemeProvider theme={darkTheme} noSsr>
             <ServicesProvider>
                 <BrowserRouter>
-                    <TopBar />
-                    <Routes>
-                        <Route path={InternalRoutes.Home} element={<Home />} />
-                    </Routes>
+                    <Box sx={backgroudProps}>
+                        <TopBar />
+                        <Routes>
+                            <Route path={InternalRoutes.Home} element={<Home />} />
+                        </Routes>
+                    </Box>
                 </BrowserRouter>
             </ServicesProvider>
         </ThemeProvider>
