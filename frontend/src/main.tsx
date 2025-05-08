@@ -23,7 +23,6 @@ async function initializeMsal() {
     });
 }
 
-// Ensure MSAL is ready before rendering
 initializeMsal().then(() => {
     const rootElement: HTMLElement | null = document.getElementById("root");
     if (!rootElement) throw new Error("Root element not found");

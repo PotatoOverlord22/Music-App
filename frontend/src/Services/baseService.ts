@@ -3,25 +3,25 @@ import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { HttpVerbs } from "../Library/Enums/HttpVerbs";
 
 export class BaseService {
-    private readonly _localhost: string = "https://localhost:7018";
-    private readonly _serviceUrl: string;
+    private readonly serverUrl: string = "https://localhost:7018";
+    private readonly serviceUrl: string;
 
     constructor(serviceUrl: string) {
-        this._serviceUrl = serviceUrl;
-    };
+        this.serviceUrl = serviceUrl;
+    }
 
     protected CreateGetQuery = <T, E = AxiosError<string, unknown>>(methodUrl: string): UseQueryOptions<T, E> => {
-        const url: string = `${this._localhost}/${this._serviceUrl}/${methodUrl}`;
+        const url: string = `${this.serverUrl}/${this.serviceUrl}/${methodUrl}`;
 
         return {
             queryKey: [this.createHashKey(url)],
             queryFn: (): Promise<T> => this.ExecuteRequest<T>(url, HttpVerbs.GET)
         };
-    };
+    }
 
     protected CreatePostQuery = <T, U>(methodUrl: string): UseMutationOptions<T, unknown, U> => {
         return this.CreateMutationQuery<T, U>(methodUrl, HttpVerbs.POST);
-    };
+    }
 
     protected CreateFilePostQuery = <T, U>(methodUrl: string): UseMutationOptions<T, unknown, U> => {
         return this.CreateMutationQuery<T, U>(methodUrl, HttpVerbs.POST, true);
@@ -29,36 +29,36 @@ export class BaseService {
 
     protected CreatePutQuery = <T, U>(methodUrl: string): UseMutationOptions<T, unknown, U> => {
         return this.CreateMutationQuery<T, U>(methodUrl, HttpVerbs.PUT);
-    };
+    }
 
     protected CreateDeleteQuery = <T, U>(methodUrl: string): UseMutationOptions<T, unknown, U> => {
         const deleteEndpoint: string = methodUrl === "" ? methodUrl : `/${methodUrl}`;
-        const url: string = `${this._localhost}/${this._serviceUrl}${deleteEndpoint}`;
+        const url: string = `${this.serverUrl}/${this.serviceUrl}${deleteEndpoint}`;
 
         return {
             mutationFn: (data: U) => {
                 return this.ExecuteRequest<T>(`${url}/${data}`, HttpVerbs.DELETE, data);
             }
         };
-    };
+    }
 
     protected CreateBulkDeleteQuery = <T, U>(methodUrl: string): UseMutationOptions<T, unknown, U> => {
         return this.CreateMutationQuery<T, U>(methodUrl, HttpVerbs.POST);
-    };
+    }
 
     protected CreateBulkUpdateQuery = <T, U>(methodUrl: string): UseMutationOptions<T, unknown, U> => {
         return this.CreateMutationQuery<T, U>(methodUrl, HttpVerbs.POST);
-    };
+    }
 
     private readonly CreateMutationQuery = <T, U>(methodUrl: string, verb: HttpVerbs, isFile?: boolean): UseMutationOptions<T, unknown, U> => {
-        const url: string = `${this._localhost}/${this._serviceUrl}/${methodUrl}`;
+        const url: string = `${this.serverUrl}/${this.serviceUrl}/${methodUrl}`;
 
         return {
             mutationFn: (data: U) => {
                 return this.ExecuteRequest(url, verb, data, isFile);
             }
         };
-    };
+    }
 
     private readonly createHashKey = (url: string, data?: unknown): string => {
         const dataString: string = data ? JSON.stringify(data) : '';
@@ -66,7 +66,7 @@ export class BaseService {
         const hash: number = this.hashStringToNumber(combinedString);
 
         return hash.toString();
-    };
+    }
 
     private readonly hashStringToNumber = (str: string): number => {
         let hash: number = 5381;
@@ -75,7 +75,7 @@ export class BaseService {
         }
 
         return hash >>> 0;
-    };
+    }
 
     private readonly ExecuteRequest = async <T>(url: string, httpVerb: HttpVerbs, data?: unknown, isFile?: boolean): Promise<T> => {
         const config: AxiosRequestConfig = {
@@ -98,5 +98,5 @@ export class BaseService {
                     return reject(error);
                 });
         });
-    };
+    }
 };

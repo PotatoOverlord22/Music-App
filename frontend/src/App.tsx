@@ -6,20 +6,21 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import { Home } from "./Components/Home/home";
 import { InternalRoutes } from "./Library/Enums/InternalRoutes";
 import { ServicesProvider } from "./Services/ServicesContext/servicesContext";
+import { TopBar } from "./Components/TopBar/topBar";
 
-const defaultTheme = createTheme();
-// const darkTheme = createTheme({
-//     palette: {
-//         mode: 'dark'
-//     },
-// });
+const darkTheme = createTheme({
+    colorSchemes: {
+        dark: true
+    },
+});
 
 const App: React.FC = (): JSX.Element => {
     useMsalAuthentication(InteractionType.Redirect);
     return (
-        <ThemeProvider theme={defaultTheme}>
+        <ThemeProvider theme={darkTheme} noSsr>
             <ServicesProvider>
                 <BrowserRouter>
+                    <TopBar />
                     <Routes>
                         <Route path={InternalRoutes.Home} element={<Home />} />
                     </Routes>
