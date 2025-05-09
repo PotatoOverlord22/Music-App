@@ -14,4 +14,10 @@ export const usePageContentStyles = makeStyles((theme: Theme) => ({
         alignItems: 'center',
         height: '100vh',
     },
+    pageContentContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+    }
 }));

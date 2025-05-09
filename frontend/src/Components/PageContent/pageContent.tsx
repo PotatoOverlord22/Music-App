@@ -1,17 +1,18 @@
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import axios from "axios";
 import React, { JSX } from "react";
-import { ErrorBoundary } from "react-error-boundary";
 import { BACKEND_URL, GENERAL_DATA_CONTROLLER } from "../../Library/constants";
 import { GlobalContextProvider } from "../../Library/Contexts/GlobalContext/globalContext";
 import { GlobalData } from "../../Library/Contexts/GlobalContext/globalContext.types";
 import { usePageContentStyles } from "./pageContent.styles";
+import { ErrorBoundary } from "react-error-boundary";
 
 export const PageContent = (props: React.PropsWithChildren): JSX.Element => {
     const styles = usePageContentStyles();
     const [moods, setMoods] = React.useState<string[]>([]);
     const [timesOfDay, setTimesOfDay] = React.useState<string[]>([]);
     const [isLoading, setIsLoading] = React.useState<boolean>(true);
+    const [isError, setIsError] = React.useState<boolean>(false);
 
     const fetchGlobalData = async () => {
         try {
@@ -24,7 +25,7 @@ export const PageContent = (props: React.PropsWithChildren): JSX.Element => {
             setTimesOfDay(timesRes.data ?? []);
         } catch (error) {
             console.error("Error fetching global data:", error);
-            throw error;
+            // setIsError(true);
         } finally {
             setIsLoading(false);
         }
@@ -41,19 +42,29 @@ export const PageContent = (props: React.PropsWithChildren): JSX.Element => {
         };
     }, [moods, timesOfDay]);
 
+    if (isError) {
+        return (
+            <Box className={styles.pageContentBackground}>
+                <Typography color="textPrimary">Failed to load data. Please try again later.</Typography>
+            </Box>
+        );
+    }
+
     return (
         <Box className={styles.pageContentBackground}>
-            <ErrorBoundary fallback={<div>Something went wrong</div>}>
-                {isLoading ? (
-                    <Box className={styles.loadingIndicator}>
-                        <CircularProgress />
-                    </Box>
-                ) : (
+            {isLoading ?
+                <Box className={styles.loadingIndicator}>
+                    <CircularProgress />
+                </Box>
+                :
+                <ErrorBoundary fallback={<div>Something went wrong</div>}>
                     <GlobalContextProvider globalData={globalData}>
-                        {props.children}
+                        <Box className={styles.pageContentContainer}>
+                            {props.children}
+                        </Box>
                     </GlobalContextProvider>
-                )}
-            </ErrorBoundary>
+                </ErrorBoundary>
+            }
         </Box>
     );
 };

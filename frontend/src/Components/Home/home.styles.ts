@@ -9,8 +9,9 @@ export const useHomeStyles = makeStyles((theme: Theme) => ({
         justifyContent: 'center',
         margin: theme.spacing(2),
         gap: theme.spacing(3),
+        maxWidth: '550px',
     },
-    moodSelectStyles: {
-        width: '420px',
+    selectStyles: {
+        width: '100%',
     }
 }));

@@ -62,7 +62,7 @@ namespace MM.BLL
             return await response.Content.ReadAsByteArrayAsync();
         }
 
-        public async Task<(byte[], string)> TransformSongWithContext(IFormFile file, string timeOfDay, string mood)
+        public async Task<(byte[], string)> TransformSongWithContext(IFormFile file, string timeOfDay, string mood, float intensity)
         {
             if (file == null || file.Length == 0)
             {
@@ -84,10 +84,16 @@ namespace MM.BLL
                 LogAndThrowValidationException($"Invalid mood: {mood}");
             }
 
+            if (intensity < 0 || intensity > 5)
+            {
+                LogAndThrowValidationException($"Invalid intensity: {intensity}");
+            }
+
             Dictionary<string, string> formFields = new Dictionary<string, string>
             {
                 { "time_of_day", timeOfDay.ToLower() },
-                { "mood", mood.ToLower() }
+                { "mood", mood.ToLower() },
+                { "intensity", intensity.ToString() }
             };
 
             HttpResponseMessage response = await PostFormAsync("process_audio_with_recommendation", file, formFields);

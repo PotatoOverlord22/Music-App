@@ -35,11 +35,11 @@ namespace MusicMania.Controllers
         [Consumes("multipart/form-data")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> TransformSongWithContext([FromForm] IFormFile file, [FromForm] string timeOfDay, [FromForm] string mood)
+        public async Task<IActionResult> TransformSongWithContext([FromForm] IFormFile file, [FromForm] string timeOfDay, [FromForm] string mood, [FromForm] float intensity)
         {
             try
             {
-                (byte[] transformedSong, string recommendedGenre) = await blContext.MusicBL.TransformSongWithContext(file, timeOfDay, mood);
+                (byte[] transformedSong, string recommendedGenre) = await blContext.MusicBL.TransformSongWithContext(file, timeOfDay, mood, intensity);
                 Response.Headers.Append("X-Recommended-Genre", recommendedGenre);
 
                 return File(transformedSong, "audio/mpeg", $"{file.FileName}-transformed.mp3");
