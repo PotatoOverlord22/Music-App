@@ -1,29 +1,31 @@
-import Brightness7Icon from "@mui/icons-material/Brightness7";
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 import NightlightIcon from '@mui/icons-material/Nightlight';
-import { Box, IconButton } from "@mui/material";
-import { useColorScheme } from "@mui/material/styles";
-import { AnimatePresence, motion } from "framer-motion";
-import React from "react";
-import { moonMotionDivStyle, moonVariants, sunMotionDivStyle, sunVariants, transition, useThemeSwitchStyles } from "./themeSwitch.styles";
+import { useColorScheme } from '@mui/material/styles';
+import { AnimatePresence, motion } from 'framer-motion';
+import React from 'react';
+import {
+    HiddenButton,
+    moonMotionDivStyle,
+    moonVariants,
+    StyledIconButton,
+    sunMotionDivStyle,
+    sunVariants,
+    ThemeSwitchContainer,
+    transition,
+} from './themeSwitch.styles';
 
 export const ThemeSwitch: React.FC = () => {
     const { mode, setMode } = useColorScheme();
-    const styles = useThemeSwitchStyles(mode);
 
     const handleToggle = () => {
-        const next = mode === "light" ? "dark" : "light";
-        setMode(next);
+        setMode(mode === 'light' ? 'dark' : 'light');
     };
 
     return (
-        <Box className={styles.themeSwitchContainer}>
-            <IconButton
-                onClick={handleToggle}
-                aria-label="toggle theme"
-                className={styles.iconButton}
-            >
+        <ThemeSwitchContainer>
+            <StyledIconButton onClick={handleToggle} aria-label="toggle theme" themeMode={mode}>
                 <AnimatePresence mode="wait" initial={false}>
-                    {mode === "light" ? (
+                    {mode === 'light' ? (
                         <motion.div
                             key="sun"
                             variants={sunVariants}
@@ -49,10 +51,10 @@ export const ThemeSwitch: React.FC = () => {
                         </motion.div>
                     )}
                 </AnimatePresence>
-                <Box className={styles.hiddenButton}>
+                <HiddenButton>
                     <Brightness7Icon />
-                </Box>
-            </IconButton>
-        </Box>
+                </HiddenButton>
+            </StyledIconButton>
+        </ThemeSwitchContainer>
     );
 };

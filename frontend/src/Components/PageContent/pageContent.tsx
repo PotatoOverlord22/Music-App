@@ -1,14 +1,13 @@
-import { Box, CircularProgress, Typography } from "@mui/material";
-import axios from "axios";
-import React, { JSX } from "react";
-import { BACKEND_URL, GENERAL_DATA_CONTROLLER } from "../../Library/constants";
-import { GlobalContextProvider } from "../../Library/Contexts/GlobalContext/globalContext";
-import { GlobalData } from "../../Library/Contexts/GlobalContext/globalContext.types";
-import { usePageContentStyles } from "./pageContent.styles";
-import { ErrorBoundary } from "react-error-boundary";
+import { CircularProgress, Typography } from '@mui/material';
+import axios from 'axios';
+import React, { JSX } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+import { BACKEND_URL, GENERAL_DATA_CONTROLLER } from '../../Library/constants';
+import { GlobalContextProvider } from '../../Library/Contexts/GlobalContext/globalContext';
+import { GlobalData } from '../../Library/Contexts/GlobalContext/globalContext.types';
+import { LoadingIndicator, PageContentBackground, PageContentContainer } from './pageContent.styles';
 
 export const PageContent = (props: React.PropsWithChildren): JSX.Element => {
-    const styles = usePageContentStyles();
     const [moods, setMoods] = React.useState<string[]>([]);
     const [timesOfDay, setTimesOfDay] = React.useState<string[]>([]);
     const [isLoading, setIsLoading] = React.useState<boolean>(true);
@@ -17,15 +16,18 @@ export const PageContent = (props: React.PropsWithChildren): JSX.Element => {
     const fetchGlobalData = async () => {
         try {
             const [moodsRes, timesRes] = await Promise.all([
-                axios.get<string[]>(`${BACKEND_URL}/api/${GENERAL_DATA_CONTROLLER}/Moods`),
-                axios.get<string[]>(`${BACKEND_URL}/api/${GENERAL_DATA_CONTROLLER}/TimesOfDay`),
+                axios.get<string[]>(
+                    `${BACKEND_URL}/api/${GENERAL_DATA_CONTROLLER}/Moods`
+                ),
+                axios.get<string[]>(
+                    `${BACKEND_URL}/api/${GENERAL_DATA_CONTROLLER}/TimesOfDay`
+                )
             ]);
 
             setMoods(moodsRes.data ?? []);
             setTimesOfDay(timesRes.data ?? []);
-        } catch (error) {
-            console.error("Error fetching global data:", error);
-            // setIsError(true);
+        } catch {
+            setIsError(true);
         } finally {
             setIsLoading(false);
         }
@@ -35,36 +37,37 @@ export const PageContent = (props: React.PropsWithChildren): JSX.Element => {
         fetchGlobalData();
     }, []);
 
-    const globalData: GlobalData = React.useMemo((): GlobalData => {
-        return {
-            moods: moods,
-            timesOfDay: timesOfDay,
-        };
-    }, [moods, timesOfDay]);
+    const globalData: GlobalData = React.useMemo(
+        () => ({
+            moods,
+            timesOfDay
+        }),
+        [moods, timesOfDay]
+    );
 
     if (isError) {
         return (
-            <Box className={styles.pageContentBackground}>
-                <Typography color="textPrimary">Failed to load data. Please try again later.</Typography>
-            </Box>
+            <PageContentBackground>
+                <Typography color="textPrimary">
+                    Failed to load data. Please try again later.
+                </Typography>
+            </PageContentBackground>
         );
     }
 
     return (
-        <Box className={styles.pageContentBackground}>
-            {isLoading ?
-                <Box className={styles.loadingIndicator}>
+        <PageContentBackground>
+            {isLoading ? (
+                <LoadingIndicator>
                     <CircularProgress />
-                </Box>
-                :
+                </LoadingIndicator>
+            ) : (
                 <ErrorBoundary fallback={<div>Something went wrong</div>}>
                     <GlobalContextProvider globalData={globalData}>
-                        <Box className={styles.pageContentContainer}>
-                            {props.children}
-                        </Box>
+                        <PageContentContainer>{props.children}</PageContentContainer>
                     </GlobalContextProvider>
                 </ErrorBoundary>
-            }
-        </Box>
+            )}
+        </PageContentBackground>
     );
 };

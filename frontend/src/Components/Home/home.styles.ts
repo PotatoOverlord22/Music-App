@@ -1,17 +1,20 @@
-import { Theme } from "@mui/material";
-import { makeStyles } from "@mui/styles";
+import { Box, FormControl } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
-export const useHomeStyles = makeStyles((theme: Theme) => ({
-    homeContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        margin: theme.spacing(2),
-        gap: theme.spacing(3),
-        maxWidth: '550px',
-    },
-    selectStyles: {
-        width: '100%',
-    }
+export const HomeContainer = styled('div')(({ theme }) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: theme.spacing(2),
+    gap: theme.spacing(3),
+    maxWidth: '550px'
+}));
+
+export const StyledFormControl = styled(FormControl)(() => ({
+    width: '550px'
+}));
+
+export const StyledBox = styled(Box)(() => ({
+    width: '550px'
 }));

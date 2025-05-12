@@ -243,7 +243,7 @@ def process_audio_with_genre_bias(audio, sr, center_freqs, recommended_genre=Non
     fade_in = np.linspace(0, 1, fade_len)
     fade_out = np.linspace(1, 0, fade_len)
     
-    recommended_gains = apply_eq_preset(recommended_genre, intensity=intensity*0.6)
+    recommended_gains = apply_eq_preset(recommended_genre, intensity=intensity)
     
     print(f"Processing audio in {num_segments} segments with genre bias towards {recommended_genre}...")
     for i in range(num_segments):
@@ -262,7 +262,7 @@ def process_audio_with_genre_bias(audio, sr, center_freqs, recommended_genre=Non
         genre_index = np.argmax(pred)
         predicted_genre = GENRE_LIST[genre_index]
         print(f"Predicted genre for segment {i+1}: {predicted_genre}")
-        predicted_gains = apply_eq_preset(predicted_genre, intensity=intensity*0.6)
+        predicted_gains = apply_eq_preset(predicted_genre, intensity=intensity)
         
         blended_gains = bias * recommended_gains + (1-bias) * predicted_gains
         
