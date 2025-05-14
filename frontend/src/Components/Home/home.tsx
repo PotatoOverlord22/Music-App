@@ -2,7 +2,6 @@ import { Alert, InputLabel, MenuItem, Select, SelectChangeEvent, Slider, Typogra
 import { useMutation, UseMutationResult } from '@tanstack/react-query';
 import { saveAs } from 'file-saver';
 import React, { JSX } from 'react';
-import { INTENISITY_MAX, INTENISITY_MIN } from '../../Library/constants';
 import { useGlobalData } from '../../Library/Contexts/GlobalContext/globalContext';
 import { useServicesContext } from '../../Library/Contexts/ServicesContext/servicesContext';
 import { Services } from '../../Library/Contexts/ServicesContext/servicesContext.types';
@@ -12,7 +11,9 @@ import { FileDropZone } from '../FileDropZone/fileDropZone';
 import { HomeContainer, StyledBox, StyledFormControl } from './home.styles';
 
 const intensityStep: number = 0.1;
-const intensityWarningThreshold: number = 3;
+const intensityWarningThreshold: number = 5;
+const minIntensity: number = 0;
+const maxIntensity: number = 10;
 
 export const Home = (): JSX.Element => {
     const services: Services = useServicesContext();
@@ -20,7 +21,7 @@ export const Home = (): JSX.Element => {
 
     const [selectedMood, setSelectedMood] = React.useState<string>("");
     const [selectedTimeOfDay, setSelectedTimeOfDay] = React.useState<string>(getTimeOfDay(new Date()));
-    const [intensity, setIntensity] = React.useState<number>(1);
+    const [intensity, setIntensity] = React.useState<number>(50);
 
     const transformSongMutation: UseMutationResult<Blob, unknown, FormData> = useMutation({
         ...services.MusicService.TransformSong(),
@@ -116,8 +117,8 @@ export const Home = (): JSX.Element => {
                 </Typography>
                 <Slider
                     size="medium"
-                    min={INTENISITY_MIN}
-                    max={INTENISITY_MAX}
+                    min={minIntensity}
+                    max={maxIntensity}
                     step={intensityStep}
                     value={intensity}
                     onChange={handleChangeIntensity}

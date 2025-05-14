@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MM.BLL.Context;
 
 namespace MM.API.Controllers
 {
+    [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class GeneralDataController : ControllerBase
     {
         private BLContext blContext;

@@ -13,6 +13,8 @@ namespace MM.BLL
         #region Members
         private static readonly string flaskBaseUrl = "http://localhost:5000";
         private readonly HttpClient httpClient;
+        private static readonly float MIN_INTENSITY = 0.0f;
+        private static readonly float MAX_INTENSITY = 1000.0f;
         #endregion Members
 
         #region Constructor
@@ -84,7 +86,7 @@ namespace MM.BLL
                 LogAndThrowValidationException($"Invalid mood: {mood}");
             }
 
-            if (intensity < 0 || intensity > 5)
+            if (intensity < MIN_INTENSITY || intensity > MAX_INTENSITY)
             {
                 LogAndThrowValidationException($"Invalid intensity: {intensity}");
             }
