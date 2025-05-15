@@ -39,7 +39,6 @@ namespace MM.DAL
             existingUser.Auth0Id = user.Auth0Id;
             existingUser.Email = user.Email;
             existingUser.Name = user.Name;
-            existingUser.Password = user.Password;
             existingUser.Picture = user.Picture;
 
             databaseContext.SaveChanges();

@@ -16,8 +16,6 @@ namespace MM.DAL.Models
 
         public string Name { get; set; }
 
-        public string? Password { get; set; }
-
         public string? Picture { get; set; }
         #endregion Properties
 
@@ -33,13 +31,12 @@ namespace MM.DAL.Models
                    Auth0Id == other.Auth0Id &&
                    Email == other.Email &&
                    Name == other.Name &&
-                   Password == other.Password &&
                    Picture == other.Picture;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Guid, Auth0Id, Email, Name, Password, Picture);
+            return HashCode.Combine(Guid, Auth0Id, Email, Name, Picture);
         }
 
         public static bool operator ==(User? left, User? right) => Equals(left, right);

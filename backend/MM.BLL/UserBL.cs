@@ -23,15 +23,15 @@ namespace MM.BLL
             if (user == null)
             {
                 blContext.DalContext.UserDAL.Add(mappedUser);
-                Console.WriteLine($"New user {userDTO.Name} added to the database.");
+                blContext.Logger.Info($"User {userDTO.Name} added to the database.");   
                 return;
             }
 
+            mappedUser.Guid = user.Guid;
             if (mappedUser != user)
             {
-                mappedUser.Guid = user.Guid;
                 blContext.DalContext.UserDAL.Update(mappedUser);
-                Console.WriteLine($"User {userDTO.Name} updated in the database.");
+                blContext.Logger.Info($"User {userDTO.Name} updated in the database.");
             }
         }
 
