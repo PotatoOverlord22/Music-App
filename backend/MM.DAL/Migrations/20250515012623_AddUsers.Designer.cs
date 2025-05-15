@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MM.DAL.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250515011644_AddUsers")]
+    [Migration("20250515012623_AddUsers")]
     partial class AddUsers
     {
         /// <inheritdoc />
@@ -36,11 +36,9 @@ namespace MM.DAL.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Picture")
