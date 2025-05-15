@@ -112,7 +112,7 @@ namespace MM.BLL
                 cfg.AddProfile<SongMapperProfile>();
             });
 
-            _mapper = mapperConfig.CreateMapper();
+            mapper = mapperConfig.CreateMapper();
         }
 
         public async Task<HttpResponseMessage> PostFormAsync(string endpoint, IFormFile? file, IDictionary<string, string>? formFields = null)

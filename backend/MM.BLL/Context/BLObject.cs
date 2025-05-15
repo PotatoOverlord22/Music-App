@@ -5,15 +5,15 @@ namespace MM.BLL.Context
     public abstract class BLObject
     {
         #region Members
-        protected IMapper _mapper;
-        protected BLContext _bLContext;
+        protected IMapper mapper;
+        protected BLContext blContext;
         #endregion Members
 
         #region Constructor
         public BLObject(BLContext bLContext)
         {
             ConfigureMapper();
-            this._bLContext = bLContext;
+            this.blContext = bLContext;
         }
         #endregion Constructor
 
@@ -25,13 +25,13 @@ namespace MM.BLL.Context
 
         protected void LogAndThrowValidationException(string message, string? exceptionMessage = null)
         {
-            _bLContext.Logger.Warn(message);
+            blContext.Logger.Warn(message);
             throw new Exception(exceptionMessage ?? message);
         }
 
         protected void LogAndThrowError(Exception ex, string message, string? exceptionMessage = null)
         {
-            _bLContext.Logger.Error(ex, message);
+            blContext.Logger.Error(ex, message);
             throw new Exception(exceptionMessage ?? message);
         }
         #endregion Methods

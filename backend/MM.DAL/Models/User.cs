@@ -1,9 +1,14 @@
-﻿namespace MM.DAL.Models
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+
+namespace MM.DAL.Models
 {
+    [Index(nameof(Auth0Id), IsUnique = true)]
     public class User
     {
         #region Properties
-        public int Id { get; set; }
+        [Key]
+        public Guid Guid { get; set; }
 
         public string Auth0Id { get; set; }
 
@@ -15,5 +20,31 @@
 
         public string? Picture { get; set; }
         #endregion Properties
+
+        #region Methods
+        public override bool Equals(object? obj)
+        {
+            if (obj is not User other)
+            {
+                return false;
+            }
+
+            return Guid == other.Guid &&
+                   Auth0Id == other.Auth0Id &&
+                   Email == other.Email &&
+                   Name == other.Name &&
+                   Password == other.Password &&
+                   Picture == other.Picture;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Guid, Auth0Id, Email, Name, Password, Picture);
+        }
+
+        public static bool operator ==(User? left, User? right) => Equals(left, right);
+
+        public static bool operator !=(User? left, User? right) => !Equals(left, right);
+        #endregion Methods
     }
 }

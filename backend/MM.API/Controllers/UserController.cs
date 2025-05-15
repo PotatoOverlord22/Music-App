@@ -32,7 +32,7 @@ namespace MM.API.Controllers
                     return Forbid();
                 }
 
-                await blContext.SyncUserAsync(userDTO);
+                await blContext.UserBL.SyncUserAsync(userDTO);
                 Console.WriteLine($"User {userDTO.Auth0Id} synced successfully.");
                 return Ok(userDTO);
             }

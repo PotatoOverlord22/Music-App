@@ -1,4 +1,5 @@
-﻿using MM.Library.Models;
+﻿using MM.DAL.Context;
+using MM.Library.Models;
 using NLog;
 
 namespace MM.BLL.Context
@@ -7,6 +8,8 @@ namespace MM.BLL.Context
     {
         #region Members
         private Lazy<Logger> logger;
+
+        private Lazy<DALContext> dalContext;
 
         private Lazy<MusicBL> musicBL;
 
@@ -19,6 +22,7 @@ namespace MM.BLL.Context
         public BLContext()
         {
             logger = new Lazy<Logger>(() => LogManager.GetCurrentClassLogger());
+            dalContext = new Lazy<DALContext>(() => new DALContext());
             musicBL = new Lazy<MusicBL>(() => new MusicBL(this));
             generalDataBL = new Lazy<GeneralDataBL>(() => new GeneralDataBL(this));
             userBL = new Lazy<UserBL>(() => new UserBL(this));
@@ -27,6 +31,8 @@ namespace MM.BLL.Context
 
         #region Properties
         public Logger Logger => logger.Value;
+
+        public DALContext DalContext => dalContext.Value;
 
         public MusicBL MusicBL => musicBL.Value;
 
@@ -46,6 +52,11 @@ namespace MM.BLL.Context
             if (logger.IsValueCreated)
             {
                 logger = null;
+            }
+
+            if (dalContext.IsValueCreated)
+            {
+                dalContext = null;
             }
 
             if (musicBL.IsValueCreated)
@@ -70,11 +81,6 @@ namespace MM.BLL.Context
         {
             Dispose(true);
             GC.SuppressFinalize(this);
-        }
-
-        public async Task<bool> SyncUserAsync(UserDTO userDTO)
-        {
-            return true;
         }
         #endregion IDisposable Implementation
 
