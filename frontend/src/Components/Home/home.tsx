@@ -1,27 +1,28 @@
-import { Alert, InputLabel, MenuItem, Select, SelectChangeEvent, Slider, Typography } from '@mui/material';
+import { Alert, Slider, Typography } from '@mui/material';
 import { useMutation, UseMutationResult } from '@tanstack/react-query';
 import { saveAs } from 'file-saver';
 import React, { JSX } from 'react';
 import { useGlobalData } from '../../Library/Contexts/GlobalContext/globalContext';
-import { useServicesContext } from '../../Library/Contexts/ServicesContext/servicesContext';
+import { useServices } from '../../Library/Contexts/ServicesContext/servicesContext';
 import { Services } from '../../Library/Contexts/ServicesContext/servicesContext.types';
-import { INTENSITIY_LABEL, MOOD_LABEL, SELECTION_EMPTY_VALUE, TIME_OF_DAY_LABEL, TRANSFORM_FILE_TEXT, TRANSFORM_LOADING_INDICATOR } from '../../Library/resources';
+import { INTENSITIY_LABEL, MOOD_LABEL, TIME_OF_DAY_LABEL, TRANSFORM_FILE_TEXT, TRANSFORM_LOADING_INDICATOR, TRANSFORM_MUSIC_TEXT } from '../../Library/resources';
 import { getTimeOfDay } from '../../Library/Utils/dateUtils';
 import { FileDropZone } from '../FileDropZone/fileDropZone';
-import { HomeContainer, StyledBox, StyledFormControl } from './home.styles';
+import { SingleChoiceDropdown } from '../SingleChoiceDropdown/singleChoiceDropdown';
+import { HomeContainer, StyledBox } from './home.styles';
 
 const intensityStep: number = 0.1;
 const intensityWarningThreshold: number = 5;
-const minIntensity: number = 0;
+const minIntensity: number = 1;
 const maxIntensity: number = 10;
 
 export const Home = (): JSX.Element => {
-    const services: Services = useServicesContext();
+    const services: Services = useServices();
     const { moods, timesOfDay } = useGlobalData();
 
-    const [selectedMood, setSelectedMood] = React.useState<string>("");
-    const [selectedTimeOfDay, setSelectedTimeOfDay] = React.useState<string>(getTimeOfDay(new Date()));
-    const [intensity, setIntensity] = React.useState<number>(50);
+    const [mood, setMood] = React.useState<string>("");
+    const [timeOfDay, setTimeOfDay] = React.useState<string>(getTimeOfDay(new Date()));
+    const [intensity, setIntensity] = React.useState<number>(5);
 
     const transformSongMutation: UseMutationResult<Blob, unknown, FormData> = useMutation({
         ...services.MusicService.TransformSong(),
@@ -43,73 +44,58 @@ export const Home = (): JSX.Element => {
         const formData = new FormData();
         formData.append('file', file);
 
-        if (selectedMood === '' || selectedTimeOfDay === '') {
+        if (mood === '' || timeOfDay === '') {
             transformSongMutation.mutate(formData);
         } else {
-            formData.append('mood', selectedMood);
-            formData.append('timeOfDay', selectedTimeOfDay);
+            formData.append('mood', mood);
+            formData.append('timeOfDay', timeOfDay);
             formData.append('intensity', intensity.toString());
             transformSongWithContextMutation.mutate(formData);
         }
     };
 
-    const handleMoodChange = (event: SelectChangeEvent<typeof selectedMood>): void => {
-        setSelectedMood(event.target.value);
+    const handleMoodChange = (newValue: string): void => {
+        setMood(newValue);
     };
 
-    const handleTimeOfDayChange = (event: SelectChangeEvent<typeof selectedTimeOfDay>): void => {
-        setSelectedTimeOfDay(event.target.value);
+    const handleTimeOfDayChange = (newValue: string): void => {
+        setTimeOfDay(newValue);
     };
 
     const handleChangeIntensity = (_: Event, newValue: number | number[]): void => {
         setIntensity(newValue as number);
     };
 
-    const isContextEnabled: boolean = selectedMood !== "" && selectedTimeOfDay !== "";
+    const isContextEnabled: boolean = mood !== "" && timeOfDay !== "";
 
     return (
         <HomeContainer>
-            <StyledFormControl variant="standard">
-                <InputLabel id="mood-select-label">{MOOD_LABEL}</InputLabel>
-                <Select
-                    id="mood-select"
-                    labelId="mood-select-label"
-                    label={MOOD_LABEL}
-                    value={selectedMood}
-                    onChange={handleMoodChange}
-                >
-                    <MenuItem value="">
-                        <em>{SELECTION_EMPTY_VALUE}</em>
-                    </MenuItem>
-                    {moods.map((mood) => (
-                        <MenuItem key={mood} value={mood}>
-                            {mood}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </StyledFormControl>
+            <Typography variant="h4" gutterBottom color='text.secondary'>
+                {TRANSFORM_MUSIC_TEXT}
+            </Typography>
 
-            <StyledFormControl variant="standard">
-                <InputLabel id="tod-select-label">
-                    {TIME_OF_DAY_LABEL}
-                </InputLabel>
-                <Select
-                    id="tod-select"
-                    labelId="tod-select-label"
-                    label={TIME_OF_DAY_LABEL}
-                    value={selectedTimeOfDay}
-                    onChange={handleTimeOfDayChange}
-                >
-                    <MenuItem value="">
-                        <em>{SELECTION_EMPTY_VALUE}</em>
-                    </MenuItem>
-                    {timesOfDay.map((tod) => (
-                        <MenuItem key={tod} value={tod}>
-                            {tod}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </StyledFormControl>
+            <FileDropZone
+                onUpload={onUpload}
+                isLoading={
+                    transformSongMutation.isPending ||
+                    transformSongWithContextMutation.isPending
+                }
+                buttonText={TRANSFORM_FILE_TEXT}
+                loadingIndicator={TRANSFORM_LOADING_INDICATOR}
+            />
+
+            <SingleChoiceDropdown
+                label={MOOD_LABEL}
+                values={moods}
+                onValueChange={handleMoodChange}
+            />
+
+            <SingleChoiceDropdown
+                label={TIME_OF_DAY_LABEL}
+                values={timesOfDay}
+                onValueChange={handleTimeOfDayChange}
+                defaultValue={timeOfDay}
+            />
 
             <StyledBox>
                 <Typography gutterBottom color="text.secondary">
@@ -126,16 +112,6 @@ export const Home = (): JSX.Element => {
                     aria-label="Controlled slider"
                 />
             </StyledBox>
-
-            <FileDropZone
-                onUpload={onUpload}
-                isLoading={
-                    transformSongMutation.isPending ||
-                    transformSongWithContextMutation.isPending
-                }
-                buttonText={TRANSFORM_FILE_TEXT}
-                loadingIndicator={TRANSFORM_LOADING_INDICATOR}
-            />
 
             {!isContextEnabled && (
                 <Alert severity="info" sx={{ width: '100%' }}>

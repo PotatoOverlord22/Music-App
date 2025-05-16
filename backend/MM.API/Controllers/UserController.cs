@@ -42,5 +42,20 @@ namespace MM.API.Controllers
             }
         }
 
+        [HttpGet("Stats")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetStats()
+        {
+            try
+            {
+                UserStatsDTO stats = await blContext.UserStatsBL.GetUserStats();
+                return Ok(stats);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

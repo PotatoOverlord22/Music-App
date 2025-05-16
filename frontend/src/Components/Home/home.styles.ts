@@ -1,7 +1,7 @@
 import { Box, FormControl } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-export const HomeContainer = styled('div')(({ theme }) => ({
+export const HomeContainer = styled(Box)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',

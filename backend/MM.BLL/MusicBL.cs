@@ -14,7 +14,7 @@ namespace MM.BLL
         private static readonly string flaskBaseUrl = "http://localhost:5000";
         private readonly HttpClient httpClient;
         private static readonly float MIN_INTENSITY = 0.0f;
-        private static readonly float MAX_INTENSITY = 1000.0f;
+        private static readonly float MAX_INTENSITY = 10.0f;
         #endregion Members
 
         #region Constructor
@@ -32,22 +32,10 @@ namespace MM.BLL
                 LogAndThrowValidationException("No file received");
             }
 
-            Uri proccessAudioEndpoint = new Uri($"{flaskBaseUrl}/process_audio");
-            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, proccessAudioEndpoint);
-            requestMessage.Headers.ExpectContinue = false;
-
-            MultipartFormDataContent multipartContent = new MultipartFormDataContent("file");
-            MemoryStream fileStream = new MemoryStream();
-
+            HttpResponseMessage response;
             try
             {
-                await file.CopyToAsync(fileStream);
-                fileStream.Seek(0, SeekOrigin.Begin);
-
-                ByteArrayContent fileContent = new ByteArrayContent(fileStream.ToArray());
-                fileContent.Headers.Add("Content-Type", "application/octet-stream");
-                multipartContent.Add(fileContent, "file", file.FileName);
-                requestMessage.Content = multipartContent;
+                response = await PostFormAsync("process_audio", file);
             }
             catch (Exception ex)
             {
@@ -55,12 +43,11 @@ namespace MM.BLL
                 return null;
             }
 
-            HttpResponseMessage response = await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseContentRead);
             if (!response.IsSuccessStatusCode)
             {
                 LogAndThrowValidationException($"Flask API error: {response.ReasonPhrase}");
             }
-
+            await blContext.UserStatsBL.IncrementCurrentUserTransformSongStats();
             return await response.Content.ReadAsByteArrayAsync();
         }
 
@@ -102,6 +89,7 @@ namespace MM.BLL
             byte[] transformedFile = await response.Content.ReadAsByteArrayAsync();
             string recommendedGenre = response.Headers.GetValues("X-Recommended-Genre").FirstOrDefault() ?? string.Empty;
 
+            await blContext.UserStatsBL.IncrementCurrentUserTransformSongStats(true);
             return (await response.Content.ReadAsByteArrayAsync(), recommendedGenre);
         }
 
@@ -115,7 +103,7 @@ namespace MM.BLL
             mapper = mapperConfig.CreateMapper();
         }
 
-        public async Task<HttpResponseMessage> PostFormAsync(string endpoint, IFormFile? file, IDictionary<string, string>? formFields = null)
+        private async Task<HttpResponseMessage> PostFormAsync(string endpoint, IFormFile? file, IDictionary<string, string>? formFields = null)
         {
             if (string.IsNullOrWhiteSpace(endpoint))
                 throw new ArgumentException("Endpoint cannot be null or whitespace.", nameof(endpoint));

@@ -11,6 +11,8 @@ namespace MM.DAL.Context
 
         #region Properties
         public DbSet<User> Users { get; set; }
+
+        public DbSet<UserStats> UserStats { get; set; }
         #endregion Properties
 
         #region Constructors
@@ -21,6 +23,17 @@ namespace MM.DAL.Context
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(connectionString);
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserStats>()
+                .Property(us => us.TransformedSongs)
+                .HasDefaultValue(0);
+
+            modelBuilder.Entity<UserStats>()
+                .Property(us => us.TransformedSongsWithContext)
+                .HasDefaultValue(0);
         }
         #endregion Methods
     }

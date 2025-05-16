@@ -6,6 +6,8 @@
         private Lazy<DatabaseContext> databaseContext;
 
         private Lazy<UserDAL> userDAL;
+
+        private Lazy<UserStatsDAL> userStatsDAL;
         #endregion Members
 
         #region Constructor
@@ -13,6 +15,7 @@
         {
             databaseContext = new Lazy<DatabaseContext>(() => new DatabaseContext());
             userDAL = new Lazy<UserDAL>(() => new UserDAL(databaseContext.Value));
+            userStatsDAL = new Lazy<UserStatsDAL>(() => new UserStatsDAL(databaseContext.Value));
         }
         #endregion Constructor
 
@@ -20,6 +23,8 @@
         public DatabaseContext DatabaseContext => databaseContext.Value;
 
         public UserDAL UserDAL => userDAL.Value;
+
+        public UserStatsDAL UserStatsDAL => userStatsDAL.Value;
         #endregion Properties
 
         #region Methods
@@ -38,6 +43,11 @@
             if (userDAL.IsValueCreated)
             {
                 userDAL = null;
+            }
+
+            if (userStatsDAL.IsValueCreated)
+            {
+                userStatsDAL = null;
             }
         }
         #endregion Methods

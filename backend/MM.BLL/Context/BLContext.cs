@@ -1,4 +1,5 @@
-﻿using MM.DAL.Context;
+﻿using Microsoft.AspNetCore.Http;
+using MM.DAL.Context;
 using MM.Library.Models;
 using NLog;
 
@@ -16,16 +17,21 @@ namespace MM.BLL.Context
         private Lazy<GeneralDataBL> generalDataBL;
 
         private Lazy<UserBL> userBL;
+
+        private Lazy<UserStatsBL> userStatsBL;
+
+        private IHttpContextAccessor httpContextAccessor;
         #endregion Members
 
         #region Constructor
-        public BLContext()
+        public BLContext(IHttpContextAccessor httpContextAccessor)
         {
             logger = new Lazy<Logger>(() => LogManager.GetCurrentClassLogger());
             dalContext = new Lazy<DALContext>(() => new DALContext());
             musicBL = new Lazy<MusicBL>(() => new MusicBL(this));
             generalDataBL = new Lazy<GeneralDataBL>(() => new GeneralDataBL(this));
             userBL = new Lazy<UserBL>(() => new UserBL(this));
+            userStatsBL = new Lazy<UserStatsBL>(() => new UserStatsBL(this, httpContextAccessor));
         }
         #endregion Constructor
 
@@ -39,6 +45,8 @@ namespace MM.BLL.Context
         public GeneralDataBL GeneralDataBL => generalDataBL.Value;
 
         public UserBL UserBL => userBL.Value;
+
+        public UserStatsBL UserStatsBL => userStatsBL.Value;
         #endregion Properties
 
         #region Methods
@@ -68,10 +76,15 @@ namespace MM.BLL.Context
             {
                 generalDataBL = null;
             }
-           
+
             if (userBL.IsValueCreated)
             {
                 userBL = null;
+            }
+
+            if (userStatsBL.IsValueCreated)
+            {
+                userStatsBL = null;
             }
         }
         #endregion Methods
