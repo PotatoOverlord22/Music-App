@@ -9,6 +9,7 @@ import { AuthenticationGuard } from "../AuthenticationGuard/authenticationGuard"
 import { Home } from "../Home/home";
 import { TopBar } from "../TopBar/topBar";
 import { backgroudProps, darkTheme } from "./App.styles";
+import { About } from "../About/about";
 
 
 const App: React.FC = (): JSX.Element => {
@@ -26,6 +27,7 @@ const App: React.FC = (): JSX.Element => {
                         <TopBar />
                         <Routes>
                             <Route path={InternalRoutes.Home} element={<AuthenticationGuard component={Home} />} />
+                            <Route path={InternalRoutes.About} element={<AuthenticationGuard component={About} />} />
                         </Routes>
                     </Box>
                 </BrowserRouter>

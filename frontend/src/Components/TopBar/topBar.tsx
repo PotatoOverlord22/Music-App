@@ -1,11 +1,13 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { AppBar, Avatar, Box, Button, CircularProgress, Popover, Typography } from '@mui/material';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { AppBar, Avatar, Box, Popover, Typography } from '@mui/material';
 import React, { JSX, useEffect } from 'react';
 import { useServices } from '../../Library/Contexts/ServicesContext/servicesContext';
 import { useFetchQuery } from '../../Library/Hooks/hooks';
 import { UserStats } from '../../Models/UserStats';
 import { ThemeSwitch } from '../ThemeSwitch/themeSwitch';
 import { StyledToolbar } from './topBar.styles';
+import { LoadingIndicator } from '../PageContent/pageContent.styles';
 
 export const TopBar = (): JSX.Element => {
     const { logout, user, getAccessTokenSilently, isAuthenticated } = useAuth0();
@@ -34,9 +36,7 @@ export const TopBar = (): JSX.Element => {
         fetchStatsWithToken();
     }, [isAuthenticated, getAccessTokenSilently, refetch]);
 
-    const open = Boolean(anchorEl);
-
-    const handleAvatarEnter = async (e: React.MouseEvent<HTMLElement>) => {
+    const handlePopoverOpen = async (e: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(e.currentTarget);
         if (isAuthenticated) {
             try {
@@ -48,7 +48,7 @@ export const TopBar = (): JSX.Element => {
         }
     };
 
-    const handleAvatarLeave = () => {
+    const handlePopoverClose = () => {
         setAnchorEl(null);
     };
 
@@ -60,64 +60,57 @@ export const TopBar = (): JSX.Element => {
         });
     };
 
+    const open = Boolean(anchorEl);
+
     return (
         <AppBar position="static">
             <StyledToolbar>
                 <ThemeSwitch />
 
-                <Button onClick={handleLogout}>
-                    Log Out
-                </Button>
+                <Box
+                    onClick={handleLogout}
+                    sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                >
+                    <LogoutIcon />
+                </Box>
 
                 <Box
-                    onMouseEnter={handleAvatarEnter}
-                    onMouseLeave={handleAvatarLeave}
-                    sx={{ display: 'inline-block' }}
+                    onMouseEnter={handlePopoverOpen}
+                    onMouseLeave={handlePopoverClose}
                 >
                     <Avatar src={user?.picture ?? ""} alt={user?.name ?? ""} />
-
-                    <Popover
-                        open={open}
-                        anchorEl={anchorEl}
-                        anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'center'
-                        }}
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'center'
-                        }}
-                        PaperProps={{
-                            onMouseEnter: handleAvatarEnter,
-                            onMouseLeave: handleAvatarLeave,
-                            sx: { p: 2, pointerEvents: 'auto' }
-                        }}
-                    >
-                        {isLoading ? (
-                            <CircularProgress size={24} />
-                        ) : userStats ? (
-                            <Box>
-                                <Typography variant="subtitle2">
-                                    Transformed Songs:
-                                </Typography>
-                                <Typography variant="body2" sx={{ mb: 1 }}>
-                                    {userStats.transformedSongs}
-                                </Typography>
-                                <Typography variant="subtitle2">
-                                    Transformed Songs With Context:
-                                </Typography>
-                                <Typography variant="body2">
-                                    {userStats.transformedSongsWithContext}
-                                </Typography>
-                            </Box>
-                        ) : (
-                            <Typography variant="body2">
-                                No stats available.
-                            </Typography>
-                        )}
-                    </Popover>
                 </Box>
+
+                <Popover
+                    id="mouse-over-popover"
+                    sx={{
+                        pointerEvents: 'none',
+                    }}
+                    open={open}
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                    }}
+                    onClose={handlePopoverClose}
+                    disableRestoreFocus
+                >
+                    {isLoading ? <LoadingIndicator /> :
+                        <Box>
+                            <Typography variant="h6" sx={{ padding: 2 }} gutterBottom>
+                                {`Transformed songs: ${userStats?.transformedSongs}`}
+                            </Typography>
+                            <Typography variant="h6" sx={{ padding: 2 }} gutterBottom>
+                                {`Transformed songs with context: ${userStats?.transformedSongsWithContext}`}
+                            </Typography>
+                        </Box>
+                    }
+                </Popover>
             </StyledToolbar>
-        </AppBar>
+        </AppBar >
     );
 };
