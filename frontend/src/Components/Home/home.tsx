@@ -14,7 +14,7 @@ import { HomeContainer, StyledBox } from './home.styles';
 const intensityStep: number = 0.1;
 const intensityWarningThreshold: number = 5;
 const minIntensity: number = 1;
-const maxIntensity: number = 10;
+const maxIntensity: number = 20;
 
 export const Home = (): JSX.Element => {
     const services: Services = useServices();

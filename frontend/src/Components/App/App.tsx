@@ -28,6 +28,8 @@ const App: React.FC = (): JSX.Element => {
                         <Routes>
                             <Route path={InternalRoutes.Home} element={<AuthenticationGuard component={Home} />} />
                             <Route path={InternalRoutes.About} element={<AuthenticationGuard component={About} />} />
+                            {/* <Route path={InternalRoutes.Home} element={<>home</>} />
+                            <Route path={InternalRoutes.About} element={<>about</>} /> */}
                         </Routes>
                     </Box>
                 </BrowserRouter>
