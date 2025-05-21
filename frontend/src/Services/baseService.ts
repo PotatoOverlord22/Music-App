@@ -1,7 +1,7 @@
 import { UseMutationOptions, UseQueryOptions } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-import { HttpVerbs } from "../Library/Enums/HttpVerbs";
-import { BACKEND_URL } from "../Library/constants";
+import { HttpVerbs } from "../library/Enums/HttpVerbs";
+import { BACKEND_URL } from "../library/constants";
 
 export class BaseService {
     private readonly serverUrl: string = BACKEND_URL;

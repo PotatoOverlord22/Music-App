@@ -1,116 +1,145 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import LogoutIcon from '@mui/icons-material/Logout';
-import { AppBar, Avatar, Box, Popover, Typography } from '@mui/material';
-import React, { JSX, useEffect } from 'react';
-import { useServices } from '../../Library/Contexts/ServicesContext/servicesContext';
-import { useFetchQuery } from '../../Library/Hooks/hooks';
-import { UserStats } from '../../Models/UserStats';
-import { ThemeSwitch } from '../ThemeSwitch/themeSwitch';
-import { StyledToolbar } from './topBar.styles';
-import { LoadingIndicator } from '../PageContent/pageContent.styles';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import { useTheme } from '@mui/material/styles';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { Menu as MenuIcon, Moon, Music, Sun } from 'lucide-react';
+import { useState } from 'react';
+import { Link as RouterLink, useLocation } from 'react-router';
+import { InternalRoutes } from '../../library/Enums/InternalRoutes';
+import UserMenu from '../UserMenu';
+import { styles } from './TopBar.styles';
+import { TopBarProps } from './TopBar.types';
 
-export const TopBar = (): JSX.Element => {
-    const { logout, user, getAccessTokenSilently, isAuthenticated } = useAuth0();
-    const services = useServices();
+export const TopBar = (props: TopBarProps): JSX.Element => {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const [mobileOpen, setMobileOpen] = useState(false);
+    const location = useLocation();
+    const { isAuthenticated, loginWithRedirect } = useAuth0();
 
-    const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-    const { data: userStats, isLoading, refetch } = useFetchQuery<UserStats>(
-        {
-            ...services.UserService.GetUserStats(),
-            enabled: false
-        }
+
+    const handleDrawerToggle = () => {
+        setMobileOpen(!mobileOpen);
+    };
+
+    const navItems = [
+        { name: 'Home', path: '/' },
+        { name: 'How It Works', path: '/how-it-works' },
+        { name: 'Transform Music', path: '/transform-music' },
+    ];
+
+    const drawer = (
+        <Box onClick={handleDrawerToggle} sx={styles.drawerContainer}>
+            <Typography variant="h6" sx={styles.drawerTitle}>
+                <Music size={24} className="logo-icon" />
+                MusicMania
+            </Typography>
+            <Divider />
+            <List>
+                {navItems.map((item) => (
+                    <ListItem key={item.name} disablePadding>
+                        <ListItemButton
+                            sx={styles.drawerListItemButton}
+                            component={RouterLink}
+                            to={item.path}
+                            selected={location.pathname === item.path}
+                        >
+                            <ListItemText primary={item.name} />
+                        </ListItemButton>
+                    </ListItem>
+                ))}
+            </List>
+        </Box>
     );
 
-    useEffect(() => {
-        const fetchStatsWithToken = async () => {
-            if (isAuthenticated) {
-                try {
-                    await getAccessTokenSilently();
-                    refetch();
-                } catch (error) {
-                    console.error("Error fetching auth token:", error);
-                }
-            }
-        };
-
-        fetchStatsWithToken();
-    }, [isAuthenticated, getAccessTokenSilently, refetch]);
-
-    const handlePopoverOpen = async (e: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(e.currentTarget);
-        if (isAuthenticated) {
-            try {
-                await getAccessTokenSilently();
-                refetch();
-            } catch (error) {
-                console.error("Error fetching auth token:", error);
-            }
-        }
-    };
-
-    const handlePopoverClose = () => {
-        setAnchorEl(null);
-    };
-
-    const handleLogout = (): void => {
-        logout({
-            logoutParams: {
-                returnTo: window.location.origin
-            }
-        });
-    };
-
-    const open = Boolean(anchorEl);
-
     return (
-        <AppBar position="static">
-            <StyledToolbar>
-                <ThemeSwitch />
+        <Box sx={styles.container}>
+            <AppBar position="static" color="default" elevation={1}>
+                <Toolbar>
+                    {isMobile && (
+                        <IconButton
+                            color="inherit"
+                            aria-label="open drawer"
+                            edge="start"
+                            onClick={handleDrawerToggle}
+                            sx={{ mr: 2 }}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                    )}
 
-                <Box
-                    onClick={handleLogout}
-                    sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                >
-                    <LogoutIcon />
-                </Box>
+                    <Typography
+                        variant="h6"
+                        component={RouterLink}
+                        to={InternalRoutes.Home}
+                        sx={styles.logoLink()}
+                    >
+                        <Music size={28} className="logo-icon" />
+                        <span style={styles.logoText(theme)}>
+                            MusicMania
+                        </span>
+                    </Typography>
 
-                <Box
-                    onMouseEnter={handlePopoverOpen}
-                    onMouseLeave={handlePopoverClose}
-                >
-                    <Avatar src={user?.picture ?? ""} alt={user?.name ?? ""} />
-                </Box>
-
-                <Popover
-                    id="mouse-over-popover"
-                    sx={{
-                        pointerEvents: 'none',
-                    }}
-                    open={open}
-                    anchorEl={anchorEl}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                    }}
-                    transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                    }}
-                    onClose={handlePopoverClose}
-                    disableRestoreFocus
-                >
-                    {isLoading ? <LoadingIndicator /> :
-                        <Box>
-                            <Typography variant="h6" sx={{ padding: 2 }} gutterBottom>
-                                {`Transformed songs: ${userStats?.transformedSongs}`}
-                            </Typography>
-                            <Typography variant="h6" sx={{ padding: 2 }} gutterBottom>
-                                {`Transformed songs with context: ${userStats?.transformedSongsWithContext}`}
-                            </Typography>
+                    {!isMobile && (
+                        <Box sx={styles.navItemsContainer}>
+                            {navItems.map((item) => (
+                                <Button
+                                    key={item.name}
+                                    component={RouterLink}
+                                    to={item.path}
+                                    color={location.pathname === item.path ? 'primary' : 'inherit'}
+                                    sx={{ my: 2 }}
+                                >
+                                    {item.name}
+                                </Button>
+                            ))}
                         </Box>
-                    }
-                </Popover>
-            </StyledToolbar>
-        </AppBar >
+                    )}
+
+                    <IconButton onClick={props.toggleColorMode} color="inherit" sx={{ ml: 1 }}>
+                        {props.colorMode === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+                    </IconButton>
+
+                    {isAuthenticated ? (
+                        <UserMenu />
+                    ) : (
+                        <Button
+                            color="primary"
+                            variant="contained"
+                            onClick={() => loginWithRedirect()}
+                            sx={{ ml: 1 }}
+                        >
+                            Login
+                        </Button>
+                    )}
+                </Toolbar>
+            </AppBar>
+
+            <Drawer
+                variant="temporary"
+                open={mobileOpen}
+                onClose={handleDrawerToggle}
+                ModalProps={{
+                    keepMounted: true, // Better open performance on mobile
+                }}
+                sx={{
+                    display: { xs: 'block', md: 'none' },
+                    '& .MuiDrawer-paper': styles.drawerPaper,
+                }}
+            >
+                {drawer}
+            </Drawer>
+        </Box>
     );
 };

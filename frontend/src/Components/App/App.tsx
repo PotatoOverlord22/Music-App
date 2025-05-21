@@ -1,41 +1,29 @@
-import { useAuth0 } from "@auth0/auth0-react";
-import { Box, ThemeProvider } from "@mui/material";
-import React, { JSX } from "react";
-import { BrowserRouter, Route, Routes } from "react-router";
-import { ServicesProvider } from "../../Library/Contexts/ServicesContext/servicesContext";
-import { InternalRoutes } from "../../Library/Enums/InternalRoutes";
-import { setupInterceptors } from "../../Library/setupInterceptors";
-import { AuthenticationGuard } from "../AuthenticationGuard/authenticationGuard";
-import { Home } from "../Home/home";
-import { TopBar } from "../TopBar/topBar";
-import { backgroudProps, darkTheme } from "./App.styles";
-import { About } from "../About/about";
+import { useNavigate } from 'react-router';
 
+import { AppState, Auth0Provider } from '@auth0/auth0-react';
+import { auth0Audience, auth0ClientId, auth0Domain } from '../../library/auth0Config';
+import { AppContent } from './AppContent';
 
-const App: React.FC = (): JSX.Element => {
-    const { getAccessTokenSilently } = useAuth0();
+export const App = () => {
+    const navigate = useNavigate();
 
-    React.useEffect((): void => {
-        setupInterceptors(getAccessTokenSilently);
-    }, [getAccessTokenSilently]);
+    const onRedirectCallback = (appState?: AppState) => {
+        navigate(appState?.returnTo ?? window.location.pathname);
+    };
 
     return (
-        <ThemeProvider theme={darkTheme} noSsr>
-            <ServicesProvider>
-                <BrowserRouter>
-                    <Box sx={backgroudProps}>
-                        <TopBar />
-                        <Routes>
-                            <Route path={InternalRoutes.Home} element={<AuthenticationGuard component={Home} />} />
-                            <Route path={InternalRoutes.About} element={<AuthenticationGuard component={About} />} />
-                            {/* <Route path={InternalRoutes.Home} element={<>home</>} />
-                            <Route path={InternalRoutes.About} element={<>about</>} /> */}
-                        </Routes>
-                    </Box>
-                </BrowserRouter>
-            </ServicesProvider>
-        </ThemeProvider>
+        <Auth0Provider
+            domain={auth0Domain}
+            clientId={auth0ClientId}
+            authorizationParams={{
+                redirect_uri: window.location.origin,
+                audience: auth0Audience,
+            }}
+            onRedirectCallback={onRedirectCallback}
+        >
+            <AppContent />
+        </Auth0Provider>
     );
-};
+}
 
 export default App;

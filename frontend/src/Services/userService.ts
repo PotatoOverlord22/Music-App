@@ -1,6 +1,6 @@
 import { UseQueryOptions } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { UserStats } from "../Models/UserStats";
+import { UserStats } from "../models/UserStats";
 import { BaseService } from "./baseService";
 
 export class UserService extends BaseService {

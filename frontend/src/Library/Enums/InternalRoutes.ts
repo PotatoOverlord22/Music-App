@@ -1,7 +1,5 @@
 export enum InternalRoutes {
     Home = "/",
-    About = "/about",
-    Profile = "/profile",
-    Error = "/error",
-    Unauthorized = "/unauthorized"
+    HowItworks = "/how-it-works",
+    TransformMusic = "/transform-music"
 };
