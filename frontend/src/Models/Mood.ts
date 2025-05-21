@@ -1,0 +1,1 @@
+export type Mood = 'Angry' | 'Dreamy' | 'Emotional' | 'Energetic' | 'Happy' | 'Intense' | 'Peaceful' | 'Relaxed' | 'Romantic' | 'Sad';

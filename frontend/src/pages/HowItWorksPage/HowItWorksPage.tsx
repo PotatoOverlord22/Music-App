@@ -7,7 +7,7 @@ import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { Calculator, Clock, Music, AudioWaveformIcon as WaveformIcon } from 'lucide-react';
 
-function HowItWorksPage() {
+export const HowItWorksPage = (): JSX.Element => {
     const theme = useTheme();
 
     return (
@@ -18,7 +18,7 @@ function HowItWorksPage() {
                     component="h1"
                     align="center"
                     gutterBottom
-                    sx={{ mb: 4, color: theme.palette.primary.main }}
+                    sx={{ mb: 4, mt: 6, color: theme.palette.primary.main }}
                 >
                     How It Works
                 </Typography>
@@ -74,12 +74,12 @@ function HowItWorksPage() {
                             Segment-Based Genre Prediction
                         </Typography>
                     </Box>
-                    <Typography paragraph>
+                    <Typography>
                         Our CNN (Convolutional Neural Network) model analyzes each segment of your audio
                         file separately. This approach allows us to identify genre changes within a single
                         track, recognizing when a song shifts from one style to another.
                     </Typography>
-                    <Typography paragraph>
+                    <Typography>
                         The model was trained on thousands of labeled audio examples across various genres,
                         allowing it to recognize patterns specific to each musical style.
                     </Typography>
@@ -135,7 +135,7 @@ function HowItWorksPage() {
                             Context-Aware Recommender
                         </Typography>
                     </Box>
-                    <Typography paragraph>
+                    <Typography>
                         Our context-aware recommender system takes into account:
                     </Typography>
                     <Grid container spacing={3} sx={{ mb: 3 }}>
@@ -151,7 +151,7 @@ function HowItWorksPage() {
                                 <Typography variant="h6" gutterBottom>
                                     Time of Day
                                 </Typography>
-                                <Typography variant="body2" paragraph>
+                                <Typography variant="body2">
                                     Different music genres work better at different times:
                                 </Typography>
                                 <Box component="ul" sx={{ pl: 2 }}>
@@ -182,7 +182,7 @@ function HowItWorksPage() {
                                 <Typography variant="h6" gutterBottom>
                                     Mood
                                 </Typography>
-                                <Typography variant="body2" paragraph>
+                                <Typography variant="body2">
                                     Your selected mood significantly influences recommendations:
                                 </Typography>
                                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
@@ -215,7 +215,7 @@ function HowItWorksPage() {
                             </Box>
                         </Grid>
                     </Grid>
-                    <Typography paragraph>
+                    <Typography>
                         By combining these contextual factors with the audio features, we can recommend
                         the most appropriate genre enhancements for your music.
                     </Typography>
@@ -228,7 +228,7 @@ function HowItWorksPage() {
                             Audio Enhancement
                         </Typography>
                     </Box>
-                    <Typography paragraph>
+                    <Typography>
                         Once we've analyzed your audio and identified the genres, we apply genre-specific EQ
                         profiles to each segment of your music. These profiles enhance the characteristic
                         frequencies of each genre, making them sound more authentic and engaging.
@@ -237,7 +237,7 @@ function HowItWorksPage() {
                     <Typography variant="h6" gutterBottom>
                         Customization Controls
                     </Typography>
-                    <Typography paragraph>
+                    <Typography>
                         In the Transform Music page, you can fine-tune the enhancement process with several
                         controls:
                     </Typography>
@@ -289,5 +289,3 @@ function HowItWorksPage() {
         </Container>
     );
 }
-
-export default HowItWorksPage;

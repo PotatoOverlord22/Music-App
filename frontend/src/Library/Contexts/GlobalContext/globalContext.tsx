@@ -1,12 +1,21 @@
 import React, { JSX } from "react";
 import { UNDEFINED_CONTEXT_ERROR_MESSAGE } from "../../constants";
-import { GlobalContextProps, GlobalData } from "./globalContext.types";
+import { GlobalData } from "./globalContext.types";
+import { UserStats } from "../../../models/UserStats"; // Assuming this path is correct
 
 const GlobalDataContext: React.Context<GlobalData | undefined> = React.createContext<GlobalData | undefined>(undefined);
 
-export const GlobalContextProvider = (props: GlobalContextProps): JSX.Element => {
+const defaultUserStats: UserStats = {
+    userId: "",
+    transformedWithContext: 0,
+    transformedWithoutContext: 0
+};
+
+export const GlobalDataProvider = (props: React.PropsWithChildren): JSX.Element => {
+    const [userStats, setUserStats] = React.useState<UserStats>(defaultUserStats);
+
     return (
-        <GlobalDataContext.Provider value={props.globalData}>
+        <GlobalDataContext.Provider value={{ userStats, setUserStats }}>
             {props.children}
         </GlobalDataContext.Provider>
     );

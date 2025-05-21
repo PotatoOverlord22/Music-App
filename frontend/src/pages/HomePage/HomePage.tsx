@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router';
 import { InternalRoutes } from '../../library/Enums/InternalRoutes';
 import { styles } from './HomePage.styles';
 
-function HomePage() {
+export const HomePage = (): JSX.Element => {
     const theme = useTheme();
     const navigate = useNavigate();
 
@@ -130,5 +130,3 @@ function HomePage() {
         </Container>
     );
 }
-
-export default HomePage;

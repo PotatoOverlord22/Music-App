@@ -1,5 +1,5 @@
-import { MusicService } from "../../../Services/musicService";
-import { UserService } from "../../../Services/userService";
+import { MusicService } from "../../../services/musicService";
+import { UserService } from "../../../services/userService";
 
 export type Services = {
     MusicService: MusicService

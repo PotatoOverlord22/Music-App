@@ -1,8 +1,8 @@
-export type GlobalData = {
-    moods: string[];
-    timesOfDay: string[];
-};
+import { UserStats } from "../../../models/UserStats";
 
-export type GlobalContextProps = {
-    globalData: GlobalData;
-} & React.PropsWithChildren;
+export type GlobalData = {
+    userStats: UserStats;
+    setUserStats: React.Dispatch<React.SetStateAction<UserStats>>;
+    // moods: string[];
+    // timesOfDay: string[];
+};

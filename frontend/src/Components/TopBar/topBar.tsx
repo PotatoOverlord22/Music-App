@@ -13,11 +13,12 @@ import { useTheme } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { Menu as MenuIcon, Moon, Music, Sun } from 'lucide-react';
+import { Menu as MenuIcon, Music } from 'lucide-react';
 import { useState } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router';
-import { InternalRoutes } from '../../library/Enums/InternalRoutes';
-import UserMenu from '../UserMenu';
+import { InternalRoutes, InternalRoutesDict } from '../../library/Enums/InternalRoutes';
+import { ThemeSwitch } from '../ThemeSwitch/themeSwitch';
+import UserMenu from '../UserMenu/UserMenu';
 import { styles } from './TopBar.styles';
 import { TopBarProps } from './TopBar.types';
 
@@ -28,16 +29,14 @@ export const TopBar = (props: TopBarProps): JSX.Element => {
     const location = useLocation();
     const { isAuthenticated, loginWithRedirect } = useAuth0();
 
-
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
 
-    const navItems = [
-        { name: 'Home', path: '/' },
-        { name: 'How It Works', path: '/how-it-works' },
-        { name: 'Transform Music', path: '/transform-music' },
-    ];
+    const drawerNavItems = Object.values(InternalRoutes).map(path => ({
+        name: InternalRoutesDict[path],
+        path: path
+    }));
 
     const drawer = (
         <Box onClick={handleDrawerToggle} sx={styles.drawerContainer}>
@@ -47,7 +46,7 @@ export const TopBar = (props: TopBarProps): JSX.Element => {
             </Typography>
             <Divider />
             <List>
-                {navItems.map((item) => (
+                {drawerNavItems.map((item) => (
                     <ListItem key={item.name} disablePadding>
                         <ListItemButton
                             sx={styles.drawerListItemButton}
@@ -65,7 +64,7 @@ export const TopBar = (props: TopBarProps): JSX.Element => {
 
     return (
         <Box sx={styles.container}>
-            <AppBar position="static" color="default" elevation={1}>
+            <AppBar position="fixed" color="default" elevation={1}>
                 <Toolbar>
                     {isMobile && (
                         <IconButton
@@ -93,7 +92,7 @@ export const TopBar = (props: TopBarProps): JSX.Element => {
 
                     {!isMobile && (
                         <Box sx={styles.navItemsContainer}>
-                            {navItems.map((item) => (
+                            {drawerNavItems.map((item) => (
                                 <Button
                                     key={item.name}
                                     component={RouterLink}
@@ -107,9 +106,7 @@ export const TopBar = (props: TopBarProps): JSX.Element => {
                         </Box>
                     )}
 
-                    <IconButton onClick={props.toggleColorMode} color="inherit" sx={{ ml: 1 }}>
-                        {props.colorMode === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-                    </IconButton>
+                    <ThemeSwitch colorMode={props.colorMode} toggleColorMode={props.toggleColorMode} />
 
                     {isAuthenticated ? (
                         <UserMenu />

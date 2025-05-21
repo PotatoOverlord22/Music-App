@@ -5,9 +5,9 @@
         #region Properties
         public Guid UserId { get; set; }
 
-        public int TransformedSongs { get; set; }
+        public int TransformedWithContext { get; set; }
 
-        public int TransformedSongsWithContext { get; set; }
+        public int TransformedWithoutContext { get; set; }
         #endregion Properties
     }
 }
