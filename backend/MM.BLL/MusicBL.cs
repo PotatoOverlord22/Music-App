@@ -14,7 +14,7 @@ namespace MM.BLL
         private static readonly string flaskBaseUrl = "http://localhost:5000";
         private readonly HttpClient httpClient;
         private static readonly float MIN_INTENSITY = 0.0f;
-        private static readonly float MAX_INTENSITY = 10.0f;
+        private static readonly float MAX_INTENSITY = 100.0f;
         #endregion Members
 
         #region Constructor
