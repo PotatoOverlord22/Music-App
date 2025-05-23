@@ -7,36 +7,64 @@ import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Slider from '@mui/material/Slider';
 import { useTheme } from '@mui/material/styles';
+import Switch from '@mui/material/Switch';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { DownloadCloud, Sparkles } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
+import { saveAs } from 'file-saver';
+import { DownloadCloud, HelpCircle, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 
 import AudioPlayer from '../../components/AudioPlayer';
 import AudioUploader from '../../components/AudioUploader';
-import { AFTERNOON, ANGRY, AUDIO_UPLOAD_SECTION_TITLE, CONTEXT_BIAS_LABEL, CUSTOMIZE_TRANSFORMATION_TEXT, DOWNLOAD_ENHANCED_TRACK_BUTTON_TEXT, DREAMY, EMOTIONAL, ENERGETIC, EVENING, HAPPY, INTENSE, INTENSITY_LABEL, MOOD_LABEL, MORNING, NIGHT, ORIGINAL_AUDIO_SECTION_TITLE, OVERLAP_LENGTH_LABEL, PEACEFUL, PROCESSED_AUDIO_SECTION_TITLE, PROCESSING_BUTTON_TEXT, RELAXED, ROMANTIC, SAD, SEGMENT_LENGTH_LABEL, TIME_OF_DAY_LABEL, TRANSFORM_MUSIC_BUTTON_TEXT, TRANSFORM_MUSIC_PAGE_TITLE, TRANSFORMATION_SETTINGS_SECTION_TITLE } from '../../library/resources';
+import { useServices } from '../../library/Contexts/ServicesContext/servicesContext';
+import { Services } from '../../library/Contexts/ServicesContext/servicesContext.types';
+import { useFetchQuery } from '../../library/Hooks/hooks';
+import { AUDIO_UPLOAD_SECTION_TITLE, CONTEXT_BIAS_LABEL, CUSTOMIZE_TRANSFORMATION_TEXT, DOWNLOAD_ENHANCED_TRACK_BUTTON_TEXT, HAPPY, INTENSITY_LABEL, MOOD_LABEL, ORIGINAL_AUDIO_SECTION_TITLE, OVERLAP_LENGTH_LABEL, PROCESSED_AUDIO_SECTION_TITLE, PROCESSING_BUTTON_TEXT, SEGMENT_LENGTH_LABEL, TIME_OF_DAY_LABEL, TRANSFORM_MUSIC_BUTTON_TEXT, TRANSFORM_MUSIC_PAGE_TITLE, TRANSFORMATION_SETTINGS_SECTION_TITLE } from '../../library/resources';
+import { getTimeOfDay } from '../../library/Utils/dateUtils';
 import { Mood } from '../../models/Mood';
 import { TimeOfDay } from '../../models/TimeOfDay';
 import { styles } from './TransformMusicPage.styles';
 
 export const TransformMusicPage = (): JSX.Element => {
     const theme = useTheme();
+    const services: Services = useServices();
 
     const [originalAudio, setOriginalAudio] = useState<File | null>(null);
     const [processedAudio, setProcessedAudio] = useState<string | null>(null);
+    const [useContext, setUseContext] = useState<boolean>(true);
 
-    const [isProcessing, setIsProcessing] = useState(false);
-
-    const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>(AFTERNOON);
+    const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>(getTimeOfDay(new Date()) as TimeOfDay);
     const [mood, setMood] = useState<Mood>(HAPPY);
     const [intensity, setIntensity] = useState<number>(8);
     const [segmentLength, setSegmentLength] = useState<number>(20);
     const [contextBias, setContextBias] = useState<number>(0.5);
     const [overlapLength, setOverlapLength] = useState<number>(2.5);
+
+    const { data: moods, isLoading: areMoodsLoading } = useFetchQuery(services.DataService.GetMoods());
+    const { data: timesOfDay, isLoading: areTimesOfDayLoading } = useFetchQuery(services.DataService.GetTimesOfDay());
+
+    const transformSongMutation = useMutation({
+        ...services.MusicService.TransformSong(),
+        onSuccess: (data: Blob) => {
+            setProcessedAudio(URL.createObjectURL(data));
+        }
+    });
+
+    const transformSongWithContextMutation = useMutation({
+        ...services.MusicService.TransformSongWithContext(),
+        onSuccess: (data: Blob) => {
+            setProcessedAudio(URL.createObjectURL(data));
+        }
+    });
+
+    const isProcessing = transformSongMutation.isPending || transformSongWithContextMutation.isPending;
 
     const handleFileUpload = (file: File) => {
         setOriginalAudio(file);
@@ -46,24 +74,40 @@ export const TransformMusicPage = (): JSX.Element => {
     const handleProcessAudio = () => {
         if (!originalAudio) return;
 
-        setIsProcessing(true);
+        const formData = new FormData();
+        formData.append('file', originalAudio);
 
-        setTimeout(() => {
-            setProcessedAudio(URL.createObjectURL(originalAudio));
-            setIsProcessing(false);
-        }, 3000);
+        if (useContext) {
+            formData.append('mood', mood);
+            formData.append('timeOfDay', timeOfDay);
+            formData.append('intensity', intensity.toString());
+            formData.append('segmentLength', segmentLength.toString());
+            formData.append('contextBias', contextBias.toString());
+            formData.append('overlapLength', overlapLength.toString());
+            transformSongWithContextMutation.mutate(formData);
+        } else {
+            transformSongMutation.mutate(formData);
+        }
     };
 
     const handleDownload = () => {
-        if (processedAudio) {
-            const a = document.createElement('a');
-            a.href = processedAudio;
-            a.download = `enhanced_${originalAudio?.name ?? 'audio.mp3'}`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+        if (processedAudio && originalAudio?.name) {
+            saveAs(processedAudio, `enhanced_${originalAudio.name}`);
+        } else if (processedAudio) {
+            saveAs(processedAudio, 'enhanced_audio.mp3');
         }
     };
+
+    const renderTooltip = (label: string, description: string) => (
+        <Box sx={{ display: 'inline-flex', alignItems: 'center' }}>
+            {label}
+            <Tooltip title={description} arrow>
+                <IconButton size="small" sx={{ ml: 0.5 }}>
+                    <HelpCircle size={16} />
+                </IconButton>
+            </Tooltip>
+        </Box>
+    );
 
     return (
         <Container maxWidth="lg">
@@ -130,55 +174,75 @@ export const TransformMusicPage = (): JSX.Element => {
                                     {CUSTOMIZE_TRANSFORMATION_TEXT}
                                 </Typography>
 
+                                <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+                                    <Switch
+                                        checked={useContext}
+                                        onChange={(e) => setUseContext(e.target.checked)}
+                                        color="primary"
+                                    />
+                                    {renderTooltip(
+                                        "Use Context",
+                                        "Enhance song transformation by considering time of day and mood. When enabled, you can customize these contextual parameters."
+                                    )}
+                                </Box>
+
                                 <Grid container spacing={3}>
                                     <Grid size={{ xs: 12, sm: 6 }}>
-                                        <FormControl fullWidth>
-                                            <InputLabel id="time-of-day-label">{TIME_OF_DAY_LABEL}</InputLabel>
-                                            <Select
-                                                labelId="time-of-day-label"
-                                                value={timeOfDay}
-                                                label={TIME_OF_DAY_LABEL}
-                                                onChange={(e) => setTimeOfDay(e.target.value as TimeOfDay)}
-                                            >
-                                                <MenuItem value="Morning">{MORNING}</MenuItem>
-                                                <MenuItem value="Afternoon">{AFTERNOON}</MenuItem>
-                                                <MenuItem value="Evening">{EVENING}</MenuItem>
-                                                <MenuItem value="Night">{NIGHT}</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                        {
+                                            areTimesOfDayLoading ? (
+                                                <CircularProgress size={24} />
+                                            )
+                                                : (
+                                                    <FormControl fullWidth disabled={!useContext}>
+                                                        <InputLabel id="time-of-day-label">{TIME_OF_DAY_LABEL}</InputLabel>
+                                                        <Select
+                                                            labelId="time-of-day-label"
+                                                            value={timeOfDay}
+                                                            label={TIME_OF_DAY_LABEL}
+                                                            onChange={(e) => setTimeOfDay(e.target.value as TimeOfDay)}
+                                                        >
+                                                            {timesOfDay?.map((time) => (
+                                                                <MenuItem key={time} value={time}>
+                                                                    {time}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select>
+                                                    </FormControl>
+                                                )}
                                     </Grid>
 
                                     <Grid size={{ xs: 12, sm: 6 }}>
-                                        <FormControl fullWidth>
-                                            <InputLabel id="mood-label">{MOOD_LABEL}</InputLabel>
-                                            <Select
-                                                labelId="mood-label"
-                                                value={mood}
-                                                label={MOOD_LABEL}
-                                                onChange={(e) => setMood(e.target.value as Mood)}
-                                            >
-                                                <MenuItem value="Angry">{ANGRY}</MenuItem>
-                                                <MenuItem value="Dreamy">{DREAMY}</MenuItem>
-                                                <MenuItem value="Emotional">{EMOTIONAL}</MenuItem>
-                                                <MenuItem value="Energetic">{ENERGETIC}</MenuItem>
-                                                <MenuItem value="Happy">{HAPPY}</MenuItem>
-                                                <MenuItem value="Intense">{INTENSE}</MenuItem>
-                                                <MenuItem value="Peaceful">{PEACEFUL}</MenuItem>
-                                                <MenuItem value="Relaxed">{RELAXED}</MenuItem>
-                                                <MenuItem value="Romantic">{ROMANTIC}</MenuItem>
-                                                <MenuItem value="Sad">{SAD}</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                        {areMoodsLoading ? (
+                                            <CircularProgress size={24} />
+                                        ) : (
+                                            <FormControl fullWidth disabled={!useContext}>
+                                                <InputLabel id="mood-label">{MOOD_LABEL}</InputLabel>
+                                                <Select
+                                                    labelId="mood-label"
+                                                    value={mood}
+                                                    label={MOOD_LABEL}
+                                                    onChange={(e) => setMood(e.target.value as Mood)}
+                                                >
+                                                    {moods?.map((m) => (
+                                                        <MenuItem key={m} value={m}>
+                                                            {m}
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        )}
                                     </Grid>
 
                                     <Grid size={{ xs: 12 }}>
-                                        <Typography id="intensity-slider" gutterBottom>
-                                            {INTENSITY_LABEL}: {intensity}
+                                        <Typography gutterBottom component={"div"}>
+                                            {renderTooltip(
+                                                `${INTENSITY_LABEL}: ${intensity}`,
+                                                "Controls how strongly the transformations are applied to your music (1-15)"
+                                            )}
                                         </Typography>
                                         <Slider
                                             value={intensity}
-                                            onChange={(_, value) => setIntensity(value as number)}
-                                            aria-labelledby="intensity-slider"
+                                            onChange={(_, value) => setIntensity(value)}
                                             valueLabelDisplay="auto"
                                             step={1}
                                             marks
@@ -188,13 +252,15 @@ export const TransformMusicPage = (): JSX.Element => {
                                     </Grid>
 
                                     <Grid size={{ xs: 12 }}>
-                                        <Typography id="segment-length-slider" gutterBottom>
-                                            {SEGMENT_LENGTH_LABEL}: {segmentLength} s
+                                        <Typography gutterBottom component={"div"}>
+                                            {renderTooltip(
+                                                `${SEGMENT_LENGTH_LABEL}: ${segmentLength} s`,
+                                                "Determines the length of each analyzed segment in seconds (10-30)"
+                                            )}
                                         </Typography>
                                         <Slider
                                             value={segmentLength}
-                                            onChange={(_, value) => setSegmentLength(value as number)}
-                                            aria-labelledby="segment-length-slider"
+                                            onChange={(_, value) => setSegmentLength(value)}
                                             valueLabelDisplay="auto"
                                             step={1}
                                             marks
@@ -204,29 +270,34 @@ export const TransformMusicPage = (): JSX.Element => {
                                     </Grid>
 
                                     <Grid size={{ xs: 12 }}>
-                                        <Typography id="context-bias-slider" gutterBottom>
-                                            {CONTEXT_BIAS_LABEL}: {contextBias.toFixed(1)}
+                                        <Typography gutterBottom component={"div"}>
+                                            {renderTooltip(
+                                                `${CONTEXT_BIAS_LABEL}: ${contextBias.toFixed(1)}`,
+                                                "Adjusts how much the context (time and mood) influences the transformation (0-1)"
+                                            )}
                                         </Typography>
                                         <Slider
                                             value={contextBias}
-                                            onChange={(_, value) => setContextBias(value as number)}
-                                            aria-labelledby="context-bias-slider"
+                                            onChange={(_, value) => setContextBias(value)}
                                             valueLabelDisplay="auto"
                                             step={0.1}
                                             marks
                                             min={0}
                                             max={1}
+                                            disabled={!useContext}
                                         />
                                     </Grid>
 
                                     <Grid size={{ xs: 12 }}>
-                                        <Typography id="overlap-length-slider" gutterBottom>
-                                            {OVERLAP_LENGTH_LABEL}: {overlapLength.toFixed(1)} s
+                                        <Typography gutterBottom component={"div"}>
+                                            {renderTooltip(
+                                                `${OVERLAP_LENGTH_LABEL}: ${overlapLength.toFixed(1)} s`,
+                                                "Controls how segments blend together for smoother transitions (0-5 seconds)"
+                                            )}
                                         </Typography>
                                         <Slider
                                             value={overlapLength}
-                                            onChange={(_, value) => setOverlapLength(value as number)}
-                                            aria-labelledby="overlap-length-slider"
+                                            onChange={(_, value) => setOverlapLength(value)}
                                             valueLabelDisplay="auto"
                                             step={0.5}
                                             marks

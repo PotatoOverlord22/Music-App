@@ -25,17 +25,11 @@ export const Home = (): JSX.Element => {
     const [intensity, setIntensity] = React.useState<number>(5);
 
     const transformSongMutation: UseMutationResult<Blob, unknown, FormData> = useMutation({
-        ...services.MusicService.TransformSong(),
-        onSuccess: (data: Blob) => {
-            saveAs(data, 'transformedSong.mp3');
-        }
+        ...services.MusicService.TransformSong()
     });
 
     const transformSongWithContextMutation: UseMutationResult<Blob, unknown, FormData> = useMutation({
-        ...services.MusicService.TransformSongWithContext(),
-        onSuccess: (data: Blob) => {
-            saveAs(data, 'transformedSongWithContext.mp3');
-        }
+        ...services.MusicService.TransformSongWithContext()
     });
 
     const onUpload = (file: File): void => {
