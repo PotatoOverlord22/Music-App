@@ -7,6 +7,8 @@ import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { Calculator, Clock, Music, AudioWaveformIcon as WaveformIcon } from 'lucide-react';
 
+import mfccSpectrogram from '../../assets/images/mfcc.jpg';
+
 export const HowItWorksPage = (): JSX.Element => {
     const theme = useTheme();
 
@@ -27,43 +29,20 @@ export const HowItWorksPage = (): JSX.Element => {
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                         <WaveformIcon size={28} color={theme.palette.primary.main} />
                         <Typography variant="h4" component="h2" sx={{ ml: 2 }}>
-                            Mel Spectrograms
+                            MFCC Spectrograms
                         </Typography>
                     </Box>
-                    <Typography>
-                        We transform audio files into mel spectrograms, which are visual representations of
-                        the frequency content of sound. These spectrograms highlight the patterns in music
-                        that help our AI recognize different genres.
+                    <Typography gutterBottom sx={{ mb: 2 }}>
+                        We transform audio files into <b>Mel-frequency cepstral coefficient (MFCC) spectrograms</b>, which are visual representations of
+                        the spectral characteristics of sound, highlighting features crucial for human perception. These help our AI recognize different genres.
                     </Typography>
-                    <Box
-                        sx={{
-                            height: 200,
-                            bgcolor: 'background.default',
-                            borderRadius: 2,
-                            mt: 2,
-                            mb: 3,
-                            overflow: 'hidden',
-                            position: 'relative',
-                            '&::before': {
-                                content: '""',
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                                bottom: 0,
-                                background: `linear-gradient(90deg, 
-                  ${theme.palette.primary.light}22 0%, 
-                  ${theme.palette.primary.main}44 25%, 
-                  ${theme.palette.secondary.main}33 50%, 
-                  ${theme.palette.primary.main}44 75%, 
-                  ${theme.palette.primary.light}22 100%)`,
-                                backgroundSize: '400% 100%',
-                                animation: 'gradient 15s ease infinite',
-                            },
-                        }}
+                    <img
+                        src={mfccSpectrogram}
+                        alt="MFCC Spectrogram Visualization"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
-                    <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
-                        Example of a mel spectrogram visualization
+                    <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', mt: 2 }}>
+                        Example of an MFCC spectrogram visualization
                     </Typography>
                 </Paper>
 
