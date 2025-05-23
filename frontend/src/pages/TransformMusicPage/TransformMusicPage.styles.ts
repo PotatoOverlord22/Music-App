@@ -3,6 +3,7 @@ import { Theme } from '@mui/material/styles';
 export const styles = {
     pageContainer: {
         py: { xs: 4, md: 6 },
+        mt: 6
     },
     pageTitle: (theme: Theme) => ({
         mb: 4,

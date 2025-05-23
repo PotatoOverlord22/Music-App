@@ -28,8 +28,6 @@ export const UserSyncHandler = () => {
                     },
                 });
 
-                console.log('Access Token obtained for sync:', token ? 'Yes' : 'No');
-
                 await axios.post(`${BACKEND_URL}/api/User/Sync`,
                     {
                         auth0Id: user.sub,
@@ -44,7 +42,6 @@ export const UserSyncHandler = () => {
                         }
                     }
                 );
-                console.log('User synced successfully with backend!');
             } catch (error) {
                 console.error('Failed to sync user with backend:', error);
                 if (axios.isAxiosError(error) && error.response?.status === 401) {
