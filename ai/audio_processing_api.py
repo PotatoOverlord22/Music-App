@@ -40,7 +40,7 @@ def process_audio():
     
     intensity = float(request.form.get('intensity', 1.0))
     segment_duration = int(request.form.get('segment_duration', 30))
-    overlap = int(request.form.get('overlap', 5))
+    overlap = float(request.form.get('overlap', 5))
     print(f"params with recom: {intensity=}, {segment_duration=}, {overlap=}")
 
     try:
@@ -84,7 +84,7 @@ def process_audio_with_recommendation():
     
     intensity = float(request.form.get('intensity', 1.0))
     segment_duration = int(request.form.get('segment_duration', 30))
-    overlap = int(request.form.get('overlap', 5))
+    overlap = float(request.form.get('overlap', 5.0))
     bias = float(request.form.get('context_bias', 0.2))
     use_recommendation = request.form.get('use_recommendation', 'true').lower() == 'true'
     print(f"params with recom: {user_mood=}, {user_time=}, {bias=}, {intensity=}, {segment_duration=}, {overlap=}, {use_recommendation=}")

@@ -17,8 +17,8 @@ namespace MM.BLL
         private static readonly float MAX_INTENSITY = 100.0f;
         private static readonly int MIN_SEGMENT_LENGTH = 10;
         private static readonly int MAX_SEGMENT_LENGTH = 30;
-        private static readonly int MIN_OVERLAP_LENGTH = 0;
-        private static readonly int MAX_OVERLAP_LENGTH = 5;
+        private static readonly float MIN_OVERLAP_LENGTH = 0.0f;
+        private static readonly float MAX_OVERLAP_LENGTH = 5.0f;
         private static readonly float MAX_BIAS = 1.0f;
         private static readonly float MIN_BIAS = 0.0f;
         #endregion Members
@@ -31,7 +31,7 @@ namespace MM.BLL
         #endregion Constructor
 
         #region Methods
-        public async Task<byte[]> TransformSong(IFormFile file, float intensity, int segmentLength, int overlapLength)
+        public async Task<byte[]> TransformSong(IFormFile file, float intensity, int segmentLength, float overlapLength)
         {
             if (file == null || file.Length == 0)
             {
@@ -80,7 +80,7 @@ namespace MM.BLL
             return await response.Content.ReadAsByteArrayAsync();
         }
 
-        public async Task<(byte[], string)> TransformSongWithContext(IFormFile file, string timeOfDay, string mood, float contextBias, float intensity, int segmentLength, int overlapLength)
+        public async Task<(byte[], string)> TransformSongWithContext(IFormFile file, string timeOfDay, string mood, float contextBias, float intensity, int segmentLength, float overlapLength)
         {
             if (file == null || file.Length == 0)
             {

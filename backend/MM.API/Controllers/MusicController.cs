@@ -37,7 +37,7 @@ namespace MM.API.Controllers
         [Consumes("multipart/form-data")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> TransformSongWithContext([FromForm] IFormFile file, [FromForm] string timeOfDay, [FromForm] string mood, [FromForm] float contextBias, [FromForm] float intensity, [FromForm] int segmentLength, [FromForm] int overlapLength)
+        public async Task<IActionResult> TransformSongWithContext([FromForm] IFormFile file, [FromForm] string timeOfDay, [FromForm] string mood, [FromForm] float contextBias, [FromForm] float intensity, [FromForm] int segmentLength, [FromForm] float overlapLength)
         {
             try
             {
