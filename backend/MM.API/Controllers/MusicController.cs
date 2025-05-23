@@ -20,11 +20,11 @@ namespace MM.API.Controllers
         [Consumes("multipart/form-data")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> TransformSong([FromForm] IFormFile file)
+        public async Task<IActionResult> TransformSong([FromForm] IFormFile file, [FromForm] float intensity, [FromForm] int segmentLength, [FromForm] int overlapLength)
         {
             try
             {
-                byte[] transformedfile = await blContext.MusicBL.TransformSong(file);
+                byte[] transformedfile = await blContext.MusicBL.TransformSong(file, intensity, segmentLength, overlapLength);
                 return File(transformedfile, "audio/mpeg", $"{file.FileName}-transformed.mp3");
             }
             catch (Exception ex)
@@ -37,11 +37,11 @@ namespace MM.API.Controllers
         [Consumes("multipart/form-data")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> TransformSongWithContext([FromForm] IFormFile file, [FromForm] string timeOfDay, [FromForm] string mood, [FromForm] float intensity)
+        public async Task<IActionResult> TransformSongWithContext([FromForm] IFormFile file, [FromForm] string timeOfDay, [FromForm] string mood, [FromForm] float contextBias, [FromForm] float intensity, [FromForm] int segmentLength, [FromForm] int overlapLength)
         {
             try
             {
-                (byte[] transformedSong, string recommendedGenre) = await blContext.MusicBL.TransformSongWithContext(file, timeOfDay, mood, intensity);
+                (byte[] transformedSong, string recommendedGenre) = await blContext.MusicBL.TransformSongWithContext(file, timeOfDay, mood, contextBias, intensity, segmentLength, overlapLength);
                 Response.Headers.Append("X-Recommended-Genre", recommendedGenre);
 
                 return File(transformedSong, "audio/mpeg", $"{file.FileName}-transformed.mp3");

@@ -76,18 +76,19 @@ export const TransformMusicPage = (): JSX.Element => {
 
         const formData = new FormData();
         formData.append('file', originalAudio);
+        formData.append('intensity', intensity.toString());
+        formData.append('segmentLength', segmentLength.toString());
+        formData.append('overlapLength', overlapLength.toString());
 
         if (useContext) {
             formData.append('mood', mood);
             formData.append('timeOfDay', timeOfDay);
-            formData.append('intensity', intensity.toString());
-            formData.append('segmentLength', segmentLength.toString());
             formData.append('contextBias', contextBias.toString());
-            formData.append('overlapLength', overlapLength.toString());
             transformSongWithContextMutation.mutate(formData);
-        } else {
-            transformSongMutation.mutate(formData);
+            return;
         }
+        
+        transformSongMutation.mutate(formData);
     };
 
     const handleDownload = () => {

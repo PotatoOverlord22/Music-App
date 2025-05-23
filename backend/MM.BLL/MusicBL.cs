@@ -15,6 +15,12 @@ namespace MM.BLL
         private readonly HttpClient httpClient;
         private static readonly float MIN_INTENSITY = 0.0f;
         private static readonly float MAX_INTENSITY = 100.0f;
+        private static readonly int MIN_SEGMENT_LENGTH = 10;
+        private static readonly int MAX_SEGMENT_LENGTH = 30;
+        private static readonly int MIN_OVERLAP_LENGTH = 0;
+        private static readonly int MAX_OVERLAP_LENGTH = 5;
+        private static readonly float MAX_BIAS = 1.0f;
+        private static readonly float MIN_BIAS = 0.0f;
         #endregion Members
 
         #region Constructor
@@ -25,7 +31,7 @@ namespace MM.BLL
         #endregion Constructor
 
         #region Methods
-        public async Task<byte[]> TransformSong(IFormFile file)
+        public async Task<byte[]> TransformSong(IFormFile file, float intensity, int segmentLength, int overlapLength)
         {
             if (file == null || file.Length == 0)
             {
@@ -47,11 +53,34 @@ namespace MM.BLL
             {
                 LogAndThrowValidationException($"Flask API error: {response.ReasonPhrase}");
             }
+
+            if (intensity < MIN_INTENSITY || intensity > MAX_INTENSITY)
+            {
+                LogAndThrowValidationException($"Invalid intensity: {intensity}");
+            }
+
+            if (segmentLength < MIN_SEGMENT_LENGTH || segmentLength > MAX_SEGMENT_LENGTH)
+            {
+                LogAndThrowValidationException($"Invalid segment length: {segmentLength}");
+            }
+
+            if (overlapLength < MIN_OVERLAP_LENGTH || overlapLength > MAX_OVERLAP_LENGTH)
+            {
+                LogAndThrowValidationException($"Invalid overlap length: {overlapLength}");
+            }
+
+            Dictionary<string, string> formFields = new Dictionary<string, string>
+            {
+                { "intensity", intensity.ToString() },
+                { "segment_duration", segmentLength.ToString() },
+                { "overlap", overlapLength.ToString() }
+            };
+
             await blContext.UserStatsBL.IncrementCurrentUserTransformSongStats();
             return await response.Content.ReadAsByteArrayAsync();
         }
 
-        public async Task<(byte[], string)> TransformSongWithContext(IFormFile file, string timeOfDay, string mood, float intensity)
+        public async Task<(byte[], string)> TransformSongWithContext(IFormFile file, string timeOfDay, string mood, float contextBias, float intensity, int segmentLength, int overlapLength)
         {
             if (file == null || file.Length == 0)
             {
@@ -78,11 +107,29 @@ namespace MM.BLL
                 LogAndThrowValidationException($"Invalid intensity: {intensity}");
             }
 
+            if (segmentLength < MIN_SEGMENT_LENGTH || segmentLength > MAX_SEGMENT_LENGTH)
+            {
+                LogAndThrowValidationException($"Invalid segment length: {segmentLength}");
+            }
+
+            if (overlapLength < MIN_OVERLAP_LENGTH || overlapLength > MAX_OVERLAP_LENGTH)
+            {
+                LogAndThrowValidationException($"Invalid overlap length: {overlapLength}");
+            }
+
+            if (contextBias < MIN_BIAS || contextBias > MAX_BIAS)
+            {
+                LogAndThrowValidationException($"Invalid bias: {contextBias}");
+            }
+
             Dictionary<string, string> formFields = new Dictionary<string, string>
             {
                 { "time_of_day", timeOfDay.ToLower() },
                 { "mood", mood.ToLower() },
-                { "intensity", intensity.ToString() }
+                { "context_bias", contextBias.ToString() },
+                { "intensity", intensity.ToString() },
+                { "segment_duration", segmentLength.ToString() },
+                { "overlap", overlapLength.ToString() }
             };
 
             HttpResponseMessage response = await PostFormAsync("process_audio_with_recommendation", file, formFields);

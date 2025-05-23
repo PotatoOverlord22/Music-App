@@ -65,7 +65,7 @@ export const PageContent = (props: React.PropsWithChildren): JSX.Element => {
                 <ErrorBoundary fallback={<div>Something went wrong</div>}>
                     <GlobalContextProvider globalData={globalData}>
                         <PageContentContainer>{props.children}</PageContentContainer>
-                    </GlobalContextProvider>
+                    </GlobalContextProvider> 
                 </ErrorBoundary>
             )}
         </PageContentBackground>
