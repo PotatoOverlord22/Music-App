@@ -38,22 +38,6 @@ namespace MM.BLL
                 LogAndThrowValidationException("No file received");
             }
 
-            HttpResponseMessage response;
-            try
-            {
-                response = await PostFormAsync("process_audio", file);
-            }
-            catch (Exception ex)
-            {
-                LogAndThrowError(ex, "Error transforming song");
-                return null;
-            }
-
-            if (!response.IsSuccessStatusCode)
-            {
-                LogAndThrowValidationException($"Flask API error: {response.ReasonPhrase}");
-            }
-
             if (intensity < MIN_INTENSITY || intensity > MAX_INTENSITY)
             {
                 LogAndThrowValidationException($"Invalid intensity: {intensity}");
@@ -75,6 +59,22 @@ namespace MM.BLL
                 { "segment_duration", segmentLength.ToString() },
                 { "overlap", overlapLength.ToString() }
             };
+
+            HttpResponseMessage response;
+            try
+            {
+                response = await PostFormAsync("process_audio", file, formFields);
+            }
+            catch (Exception ex)
+            {
+                LogAndThrowError(ex, "Error transforming song");
+                return null;
+            }
+
+            if (!response.IsSuccessStatusCode)
+            {
+                LogAndThrowValidationException($"Flask API error: {response.ReasonPhrase}");
+            }
 
             await blContext.UserStatsBL.IncrementCurrentUserTransformSongStats();
             return await response.Content.ReadAsByteArrayAsync();
