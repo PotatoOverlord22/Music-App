@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using MM.BLL.Context;
 using MM.BLL.Mappers;
 using MM.DAL.Models;
@@ -10,15 +9,8 @@ namespace MM.BLL
 {
     public class UserStatsBL : BLObject
     {
-        #region Members
-        private readonly IHttpContextAccessor httpContextAccessor;
-        #endregion Members
-
         #region Constructors
-        public UserStatsBL(BLContext bLContext, IHttpContextAccessor httpContextAccessor) : base(bLContext)
-        {
-            this.httpContextAccessor = httpContextAccessor;
-        }
+        public UserStatsBL(BLContext bLContext) : base(bLContext) { }
         #endregion Constructors
 
         #region Methods
@@ -74,7 +66,7 @@ namespace MM.BLL
 
         private async Task<(User user, UserStats stats)> GetCurrentUserAndStatsAsync()
         {
-            string auth0Id = httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new Exception("User is not authenticated");
+            string auth0Id = blContext.HttpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new Exception("User is not authenticated");
             User user = await blContext.DalContext.UserDAL.GetByAuth0Id(auth0Id) ?? throw new Exception($"User with Auth0 ID {auth0Id} not found in the database.");
             UserStats stats = await blContext.DalContext.UserStatsDAL.GetByUserGuid(user.Guid)
                 ?? new UserStats
@@ -85,7 +77,7 @@ namespace MM.BLL
                     TransformedSongs = 0
                 };
 
-            return (user, stats);
+                return (user, stats);
         }
         #endregion Methods
     }

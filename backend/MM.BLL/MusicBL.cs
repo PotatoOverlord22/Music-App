@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using MM.BLL.Context;
 using MM.BLL.Mappers;
+using MM.Library.Constants;
 using MM.Library.Enums;
 using MM.Library.Utils;
 using System.Net.Http.Headers;
@@ -13,14 +14,7 @@ namespace MM.BLL
         #region Members
         private static readonly string flaskBaseUrl = "http://localhost:5000";
         private readonly HttpClient httpClient;
-        private static readonly float MIN_INTENSITY = 0.0f;
-        private static readonly float MAX_INTENSITY = 100.0f;
-        private static readonly int MIN_SEGMENT_LENGTH = 10;
-        private static readonly int MAX_SEGMENT_LENGTH = 30;
-        private static readonly float MIN_OVERLAP_LENGTH = 0.0f;
-        private static readonly float MAX_OVERLAP_LENGTH = 5.0f;
-        private static readonly float MAX_BIAS = 1.0f;
-        private static readonly float MIN_BIAS = 0.0f;
+
         #endregion Members
 
         #region Constructor
@@ -38,17 +32,17 @@ namespace MM.BLL
                 LogAndThrowValidationException("No file received");
             }
 
-            if (intensity < MIN_INTENSITY || intensity > MAX_INTENSITY)
+            if (intensity < MusicConfigurationConstants.MIN_INTENSITY || intensity > MusicConfigurationConstants.MAX_INTENSITY)
             {
                 LogAndThrowValidationException($"Invalid intensity: {intensity}");
             }
 
-            if (segmentLength < MIN_SEGMENT_LENGTH || segmentLength > MAX_SEGMENT_LENGTH)
+            if (segmentLength < MusicConfigurationConstants.MIN_SEGMENT_LENGTH || segmentLength > MusicConfigurationConstants.MAX_SEGMENT_LENGTH)
             {
                 LogAndThrowValidationException($"Invalid segment length: {segmentLength}");
             }
 
-            if (overlapLength < MIN_OVERLAP_LENGTH || overlapLength > MAX_OVERLAP_LENGTH)
+            if (overlapLength < MusicConfigurationConstants.MIN_OVERLAP_LENGTH || overlapLength > MusicConfigurationConstants.MAX_OVERLAP_LENGTH)
             {
                 LogAndThrowValidationException($"Invalid overlap length: {overlapLength}");
             }
@@ -102,22 +96,22 @@ namespace MM.BLL
                 LogAndThrowValidationException($"Invalid mood: {mood}");
             }
 
-            if (intensity < MIN_INTENSITY || intensity > MAX_INTENSITY)
+            if (intensity < MusicConfigurationConstants.MIN_INTENSITY || intensity > MusicConfigurationConstants.MAX_INTENSITY)
             {
                 LogAndThrowValidationException($"Invalid intensity: {intensity}");
             }
 
-            if (segmentLength < MIN_SEGMENT_LENGTH || segmentLength > MAX_SEGMENT_LENGTH)
+            if (segmentLength < MusicConfigurationConstants.MIN_SEGMENT_LENGTH || segmentLength > MusicConfigurationConstants.MAX_SEGMENT_LENGTH)
             {
                 LogAndThrowValidationException($"Invalid segment length: {segmentLength}");
             }
 
-            if (overlapLength < MIN_OVERLAP_LENGTH || overlapLength > MAX_OVERLAP_LENGTH)
+            if (overlapLength < MusicConfigurationConstants.MIN_OVERLAP_LENGTH || overlapLength > MusicConfigurationConstants.MAX_OVERLAP_LENGTH)
             {
                 LogAndThrowValidationException($"Invalid overlap length: {overlapLength}");
             }
 
-            if (contextBias < MIN_BIAS || contextBias > MAX_BIAS)
+            if (contextBias < MusicConfigurationConstants.MIN_BIAS || contextBias > MusicConfigurationConstants.MAX_BIAS)
             {
                 LogAndThrowValidationException($"Invalid bias: {contextBias}");
             }
@@ -138,16 +132,6 @@ namespace MM.BLL
 
             await blContext.UserStatsBL.IncrementCurrentUserTransformSongStats(true);
             return (await response.Content.ReadAsByteArrayAsync(), recommendedGenre);
-        }
-
-        protected override void ConfigureMapper()
-        {
-            MapperConfiguration mapperConfig = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile<SongMapperProfile>();
-            });
-
-            mapper = mapperConfig.CreateMapper();
         }
 
         private async Task<HttpResponseMessage> PostFormAsync(string endpoint, IFormFile? file, IDictionary<string, string>? formFields = null)

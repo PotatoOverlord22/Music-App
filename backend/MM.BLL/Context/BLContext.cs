@@ -26,12 +26,13 @@ namespace MM.BLL.Context
         #region Constructor
         public BLContext(IHttpContextAccessor httpContextAccessor)
         {
+            this.httpContextAccessor = httpContextAccessor ?? new HttpContextAccessor();
             logger = new Lazy<Logger>(() => LogManager.GetCurrentClassLogger());
             dalContext = new Lazy<DALContext>(() => new DALContext());
             musicBL = new Lazy<MusicBL>(() => new MusicBL(this));
             generalDataBL = new Lazy<GeneralDataBL>(() => new GeneralDataBL(this));
             userBL = new Lazy<UserBL>(() => new UserBL(this));
-            userStatsBL = new Lazy<UserStatsBL>(() => new UserStatsBL(this, httpContextAccessor));
+            userStatsBL = new Lazy<UserStatsBL>(() => new UserStatsBL(this));
         }
         #endregion Constructor
 
@@ -47,6 +48,8 @@ namespace MM.BLL.Context
         public UserBL UserBL => userBL.Value;
 
         public UserStatsBL UserStatsBL => userStatsBL.Value;
+
+        public IHttpContextAccessor HttpContextAccessor => httpContextAccessor;
         #endregion Properties
 
         #region Methods

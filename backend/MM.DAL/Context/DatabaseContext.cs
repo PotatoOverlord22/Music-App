@@ -13,6 +13,10 @@ namespace MM.DAL.Context
         public DbSet<User> Users { get; set; }
 
         public DbSet<UserStats> UserStats { get; set; }
+
+        public DbSet<GenrePreset> GenrePresets { get; set; }
+
+        public DbSet<GenrePresetValue> GenrePresetValues { get; set; }
         #endregion Properties
 
         #region Constructors
@@ -34,6 +38,18 @@ namespace MM.DAL.Context
             modelBuilder.Entity<UserStats>()
                 .Property(us => us.TransformedSongsWithContext)
                 .HasDefaultValue(0);
+
+            modelBuilder.Entity<User>()
+                .HasMany(us => us.GenrePresets)
+                .WithOne(gp => gp.User)
+                .HasForeignKey(gp => gp.UserGuid)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<GenrePreset>()
+                .HasMany(gp => gp.Values)
+                .WithOne(gpv => gpv.GenrePreset)
+                .HasForeignKey(gpv => gpv.GenrePresetGuid)
+                .OnDelete(DeleteBehavior.Cascade);
         }
         #endregion Methods
     }

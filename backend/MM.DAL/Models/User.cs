@@ -17,6 +17,8 @@ namespace MM.DAL.Models
         public string? Name { get; set; }
 
         public string? Picture { get; set; }
+
+        public ICollection<GenrePreset> GenrePresets { get; set; } = new List<GenrePreset>();
         #endregion Properties
 
         #region Methods
