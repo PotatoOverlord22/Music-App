@@ -18,10 +18,10 @@
         public DALContext()
         {
             databaseContext = new Lazy<DatabaseContext>(() => new DatabaseContext());
-            userDAL = new Lazy<UserDAL>(() => new UserDAL(databaseContext.Value));
-            userStatsDAL = new Lazy<UserStatsDAL>(() => new UserStatsDAL(databaseContext.Value));
-            genrePresetDAL = new Lazy<GenrePresetDAL>(() => new GenrePresetDAL(databaseContext.Value));
-            genrePresetValueDAL = new Lazy<GenrePresetValueDAL>(() => new GenrePresetValueDAL(databaseContext.Value));
+            userDAL = new Lazy<UserDAL>(() => new UserDAL(this));
+            userStatsDAL = new Lazy<UserStatsDAL>(() => new UserStatsDAL(this));
+            genrePresetDAL = new Lazy<GenrePresetDAL>(() => new GenrePresetDAL(this));
+            genrePresetValueDAL = new Lazy<GenrePresetValueDAL>(() => new GenrePresetValueDAL(this));
         }
         #endregion Constructor
 

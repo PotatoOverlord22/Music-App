@@ -3,20 +3,20 @@
     public class DALObject
     {
         #region Members
-        protected DatabaseContext databaseContext;
+        protected DALContext dalContext;
         #endregion Members
 
         #region Constructor
-        public DALObject(DatabaseContext dbContext)
+        public DALObject(DALContext dalContext)
         {
-            databaseContext = dbContext;
+            this.dalContext = dalContext;
         }
         #endregion Constructor
 
         #region Methods
         public async Task<T> ExecuteInTransactionAsync<T>(Func<Task<T>> operation)
         {
-            using var transaction = await databaseContext.Database.BeginTransactionAsync();
+            using var transaction = await dalContext.DatabaseContext.Database.BeginTransactionAsync();
             try
             {
                 T result = await operation();
@@ -32,7 +32,7 @@
 
         public async Task ExecuteInTransactionAsync(Func<Task> operation)
         {
-            using var transaction = await databaseContext.Database.BeginTransactionAsync();
+            using var transaction = await dalContext.DatabaseContext.Database.BeginTransactionAsync();
             try
             {
                 await operation();

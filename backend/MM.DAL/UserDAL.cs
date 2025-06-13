@@ -7,29 +7,29 @@ namespace MM.DAL
     public class UserDAL : DALObject
     {
         #region Constructors
-        public UserDAL(DatabaseContext dbContext) : base(dbContext) { }
+        public UserDAL(DALContext dalContext) : base(dalContext) { }
         #endregion Constructors
 
         #region Methods
         public async Task<User?> GetByAuth0Id(string auth0Id)
         {
-            return await databaseContext.Users.FirstOrDefaultAsync(u => u.Auth0Id == auth0Id);
+            return await dalContext.DatabaseContext.Users.FirstOrDefaultAsync(u => u.Auth0Id == auth0Id);
         }
 
         public async Task<bool> ExistsByAuth0Id(string auth0Id)
         {
-            return await databaseContext.Users.AnyAsync(u => u.Auth0Id == auth0Id);
+            return await dalContext.DatabaseContext.Users.AnyAsync(u => u.Auth0Id == auth0Id);
         }
 
         public void Add(User user)
         {
-            databaseContext.Users.Add(user);
-            databaseContext.SaveChanges();
+            dalContext.DatabaseContext.Users.Add(user);
+            dalContext.DatabaseContext.SaveChanges();
         }
 
         public void Update(User user)
         {
-            User? existingUser = databaseContext.Users.FirstOrDefault(u => u.Guid == user.Guid);
+            User? existingUser = dalContext.DatabaseContext.Users.FirstOrDefault(u => u.Guid == user.Guid);
             if (existingUser == null)
             {
                 throw new Exception($"The user with uid: {user.Guid} was not found");
@@ -40,7 +40,7 @@ namespace MM.DAL
             existingUser.Name = user.Name;
             existingUser.Picture = user.Picture;
 
-            databaseContext.SaveChanges();
+            dalContext.DatabaseContext.SaveChanges();
         }
         #endregion Methods
     }

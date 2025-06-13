@@ -66,9 +66,19 @@ namespace MM.BLL
 
         private async Task<(User user, UserStats stats)> GetCurrentUserAndStatsAsync()
         {
-            string auth0Id = blContext.HttpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new Exception("User is not authenticated");
-            User user = await blContext.DalContext.UserDAL.GetByAuth0Id(auth0Id) ?? throw new Exception($"User with Auth0 ID {auth0Id} not found in the database.");
-            UserStats stats = await blContext.DalContext.UserStatsDAL.GetByUserGuid(user.Guid)
+            string? auth0Id = blContext.HttpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(auth0Id))
+            {
+                LogAndThrowError(new Exception(), "User is not authenticated or Auth0 ID is missing.");
+            }
+
+            User? user = await blContext.DalContext.UserDAL.GetByAuth0Id(auth0Id!);
+            if (user == null)
+            {
+                LogAndThrowError(new Exception(), "User not found in the database. Please register first.");
+            }
+
+            UserStats stats = await blContext.DalContext.UserStatsDAL.GetByUserGuid(user!.Guid)
                 ?? new UserStats
                 {
                     UserGuid = user.Guid,
@@ -77,7 +87,7 @@ namespace MM.BLL
                     TransformedSongs = 0
                 };
 
-                return (user, stats);
+            return (user, stats);
         }
         #endregion Methods
     }

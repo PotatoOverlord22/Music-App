@@ -6,7 +6,7 @@ namespace MM.DAL
     public class GenrePresetValueDAL : DALObject
     {
         #region Constructors
-        public GenrePresetValueDAL(DatabaseContext dbContext) : base(dbContext) { }
+        public GenrePresetValueDAL(DALContext dalContext) : base(dalContext) { }
         #endregion Constructors
 
         #region Methods
@@ -17,8 +17,8 @@ namespace MM.DAL
                 throw new ArgumentException("The list of genre preset values cannot be null or empty.", nameof(genrePresetValues));
             }
 
-            databaseContext.GenrePresetValues.AddRange(genrePresetValues);
-            await databaseContext.SaveChangesAsync();
+            dalContext.DatabaseContext.GenrePresetValues.AddRange(genrePresetValues);
+            await dalContext.DatabaseContext.SaveChangesAsync();
             return genrePresetValues;
         }
         #endregion Methods

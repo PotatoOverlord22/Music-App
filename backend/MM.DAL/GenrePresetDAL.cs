@@ -1,4 +1,5 @@
-﻿using MM.DAL.Context;
+﻿using Microsoft.EntityFrameworkCore;
+using MM.DAL.Context;
 using MM.DAL.Models;
 
 namespace MM.DAL
@@ -6,15 +7,24 @@ namespace MM.DAL
     public class GenrePresetDAL : DALObject
     {
         #region Constructors
-        public GenrePresetDAL(DatabaseContext dbContext) : base(dbContext) { }
+        public GenrePresetDAL(DALContext dalContext) : base(dalContext) { }
         #endregion Constructors
 
         #region Methods
         public async Task<GenrePreset> Add(GenrePreset genrePreset)
         {
-            databaseContext.GenrePresets.Add(genrePreset);
-            await databaseContext.SaveChangesAsync();
+            dalContext.DatabaseContext.GenrePresets.Add(genrePreset);
+            await dalContext.DatabaseContext.SaveChangesAsync();
             return genrePreset;
+        }
+
+        public async Task<GenrePreset?> GetGenrePresetByUserAuth0Id(string auth0Id)
+        {
+            return await dalContext.DatabaseContext.GenrePresets
+                    .Include(gp => gp.Values)
+                    .Include(gp => gp.User)
+                    .Where(gp => gp.User.Auth0Id == auth0Id)
+                    .FirstOrDefaultAsync();
         }
         #endregion Methods
     }
