@@ -17,6 +17,6 @@ namespace MM.DAL.Models
         [ForeignKey(nameof(UserGuid))]
         public User User { get; set; }
 
-        public ICollection<GenrePresetValue> Values { get; set; } = new List<GenrePresetValue>();
+        public List<GenrePresetValue> Values { get; set; } = new List<GenrePresetValue>();
     }
 }

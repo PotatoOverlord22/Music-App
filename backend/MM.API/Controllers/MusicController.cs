@@ -20,7 +20,7 @@ namespace MM.API.Controllers
         [Consumes("multipart/form-data")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> TransformSong([FromForm] IFormFile file, [FromForm] float intensity, [FromForm] int segmentLength, [FromForm] int overlapLength)
+        public async Task<IActionResult> TransformSong([FromForm] IFormFile file, [FromForm] float intensity, [FromForm] float segmentLength, [FromForm] int overlapLength)
         {
             try
             {

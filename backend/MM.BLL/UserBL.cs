@@ -22,7 +22,7 @@ namespace MM.BLL
             if (user == null)
             {
                 blContext.DalContext.UserDAL.Add(mappedUser);
-                await PopulateDefaultGenrePresets(mappedUser.Guid);
+                await blContext.GenrePresetBL.PopulateDefaultGenrePresets(mappedUser.Guid);
                 blContext.Logger.Info($"User {userDTO.Name} added to the database.");
                 return;
             }
@@ -43,35 +43,6 @@ namespace MM.BLL
             });
 
             mapper = mapperConfig.CreateMapper();
-        }
-
-        private async Task PopulateDefaultGenrePresets(Guid userGuid)
-        {
-            foreach (var genre in DefaultGenrePresets.Presets)
-            {
-                GenrePreset newGenrePreset = new GenrePreset
-                {
-                    UserGuid = userGuid,
-                    GenreName = genre.Key
-                };
-
-                await blContext.DalContext.GenrePresetDAL.Add(newGenrePreset);
-
-                List<GenrePresetValue> values = new List<GenrePresetValue>();
-                for (int i = 0; i < genre.Value.Length; i++)
-                {
-                    GenrePresetValue presetValue = new GenrePresetValue
-                    {
-                        GenrePresetGuid = newGenrePreset.Guid,
-                        BandIndex = i,
-                        Gain = genre.Value[i]
-                    };
-
-                    values.Add(presetValue);
-                }
-
-                await blContext.DalContext.GenrePresetValueDAL.AddBulk(values);
-            }
         }
     }
     #endregion Methods

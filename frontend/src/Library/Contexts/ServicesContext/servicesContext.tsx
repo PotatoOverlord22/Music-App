@@ -5,16 +5,19 @@ import { UserService } from "../../../services/userService";
 import { UNDEFINED_CONTEXT_ERROR_MESSAGE } from "../../constants";
 import { Services } from "./servicesContext.types";
 import { DataService } from "../../../services/dataService";
+import { GenrePresetService } from "../../../services/genrePresetService";
 
 const queryClient: QueryClient = new QueryClient();
 const musicService: MusicService = new MusicService();
 const userService: UserService = new UserService();
 const dataService: DataService = new DataService();
+const genrePresetService: GenrePresetService = new GenrePresetService();
 
 const services: Services = {
     MusicService: musicService,
     UserService: userService,
-    DataService: dataService
+    DataService: dataService,
+    GenrePresetService: genrePresetService
 };
 
 const ServicesContext: Context<Services | undefined> = createContext<Services | undefined>(undefined);

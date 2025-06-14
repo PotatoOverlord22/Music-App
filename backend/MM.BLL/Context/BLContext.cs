@@ -20,6 +20,8 @@ namespace MM.BLL.Context
 
         private Lazy<UserStatsBL> userStatsBL;
 
+        private Lazy<GenrePresetBL> genrePresetBL;
+
         private IHttpContextAccessor httpContextAccessor;
         #endregion Members
 
@@ -33,6 +35,7 @@ namespace MM.BLL.Context
             generalDataBL = new Lazy<GeneralDataBL>(() => new GeneralDataBL(this));
             userBL = new Lazy<UserBL>(() => new UserBL(this));
             userStatsBL = new Lazy<UserStatsBL>(() => new UserStatsBL(this));
+            genrePresetBL = new Lazy<GenrePresetBL>(() => new GenrePresetBL(this));
         }
         #endregion Constructor
 
@@ -48,6 +51,8 @@ namespace MM.BLL.Context
         public UserBL UserBL => userBL.Value;
 
         public UserStatsBL UserStatsBL => userStatsBL.Value;
+
+        public GenrePresetBL GenrePresetBL => genrePresetBL.Value;
 
         public IHttpContextAccessor HttpContextAccessor => httpContextAccessor;
         #endregion Properties
@@ -88,6 +93,11 @@ namespace MM.BLL.Context
             if (userStatsBL.IsValueCreated)
             {
                 userStatsBL = null;
+            }
+
+            if (genrePresetBL.IsValueCreated)
+            {
+                genrePresetBL = null;
             }
         }
         #endregion Methods

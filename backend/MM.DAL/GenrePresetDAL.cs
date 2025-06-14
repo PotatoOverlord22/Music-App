@@ -18,13 +18,44 @@ namespace MM.DAL
             return genrePreset;
         }
 
-        public async Task<List<GenrePreset>> GetGenrePresetsByUserAuth0Id(string auth0Id)
+        public async Task BulkAdd(List<GenrePreset> newPresets)
+        {
+            if (newPresets == null || !newPresets.Any())
+            {
+                return;
+            }
+
+            dalContext.DatabaseContext.GenrePresets.AddRange(newPresets);
+            await dalContext.DatabaseContext.SaveChangesAsync();
+        }
+
+        public async Task<List<GenrePreset>> GetGenrePresetsForUser(User user)
         {
             return await dalContext.DatabaseContext.GenrePresets
-                        .Include(gp => gp.Values)
-                        .Include(gp => gp.User)
-                        .Where(gp => gp.User.Auth0Id == auth0Id)
-                        .ToListAsync();
+                                .Include(gp => gp.Values)
+                                .Where(gp => gp.UserGuid == user.Guid)
+                                .ToListAsync();
+        }
+
+        public async Task UpdatePresetsForUser(User user, List<GenrePreset> incomingGenrePresets)
+        {
+            List<GenrePreset> existingPresets = await GetGenrePresetsForUser(user);
+
+            foreach (GenrePreset presetToUpdate in existingPresets)
+            {
+                GenrePreset incomingPreset = incomingGenrePresets.First(p => p.GenreName == presetToUpdate.GenreName);
+
+                presetToUpdate.UserGuid = incomingPreset.UserGuid;
+                presetToUpdate.GenreName = incomingPreset.GenreName;
+                for (int i = 0; i < presetToUpdate.Values.Count; i++)
+                {
+                    presetToUpdate.Values[i].Gain = incomingPreset.Values[i].Gain;
+                }
+
+                dalContext.DatabaseContext.GenrePresets.Update(presetToUpdate);
+            }
+
+            await dalContext.DatabaseContext.SaveChangesAsync();
         }
         #endregion Methods
     }

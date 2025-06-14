@@ -28,7 +28,7 @@ namespace MM.BLL
         #endregion Constructor
 
         #region Methods
-        public async Task<byte[]> TransformSong(IFormFile file, float intensity, int segmentLength, float overlapLength)
+        public async Task<byte[]> TransformSong(IFormFile file, float intensity, float segmentLength, float overlapLength)
         {
             if (file == null || file.Length == 0)
             {
@@ -154,15 +154,14 @@ namespace MM.BLL
                 }
             }
 
-            string? auth0Id = blContext.HttpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
+            string? auth0Id = GetCurrentUserAuth0Id();
             if (string.IsNullOrEmpty(auth0Id))
             {
                 LogAndThrowValidationException("Auth0 ID not found for the current user.");
             }
-
-            List<GenrePreset> genrePresets = await blContext.DalContext.GenrePresetDAL.GetGenrePresetsByUserAuth0Id(auth0Id!);
-
+            
+            User? user = await blContext.DalContext.UserDAL.GetByAuth0Id(auth0Id!);
+            List<GenrePreset> genrePresets = await blContext.DalContext.GenrePresetDAL.GetGenrePresetsForUser(user!);
             if (genrePresets.Count == 0)
             {
                 genrePresets = GetAllDefaultGenrePresets();

@@ -2,10 +2,12 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Box, CircularProgress, CssBaseline, PaletteMode, ThemeProvider } from "@mui/material";
 import React from "react";
 import { Route, Routes } from "react-router";
+import { GlobalDataProvider } from "../../library/Contexts/GlobalContext/globalContext";
 import { ServicesProvider } from "../../library/Contexts/ServicesContext/servicesContext";
 import { InternalRoutes } from "../../library/Enums/InternalRoutes";
 import { setupInterceptors } from "../../library/setupInterceptors";
 import { UserSyncHandler } from "../../library/userSyncHandler";
+import { ConfigurePresetsPage } from "../../pages/ConfigurePresetsPage/configurePresetsPage";
 import { HomePage } from "../../pages/HomePage/HomePage";
 import { HowItWorksPage } from "../../pages/HowItWorksPage/HowItWorksPage";
 import { TransformMusicPage } from "../../pages/TransformMusicPage/TransformMusicPage";
@@ -13,8 +15,6 @@ import { ProtectedRoute } from "../ProtectedRoute/ProtectedRoute";
 import { styles } from "../ProtectedRoute/ProtectedRoute.styles";
 import { TopBar } from "../TopBar/TopBar";
 import { createCustomTheme } from "./Theme";
-import { GlobalDataProvider } from "../../library/Contexts/GlobalContext/globalContext";
-import ConfigurePresetsPage from "../../pages/ConfigurePresetsPage/configurePresetsPage";
 
 export const AppContent = () => {
     const { isLoading, getAccessTokenSilently } = useAuth0();

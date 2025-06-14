@@ -11,28 +11,6 @@ export const styles = {
     presetGrid: {
         mb: 4,
     },
-    presetCard: (theme: Theme, isSelected: boolean) => ({
-        cursor: 'pointer',
-        transition: 'all 0.3s ease',
-        border: isSelected ? `2px solid ${theme.palette.primary.main}` : '2px solid transparent',
-        '&:hover': {
-            transform: 'translateY(-2px)',
-            boxShadow: theme.shadows[4],
-        },
-    }),
-    selectedPresetIndicator: (theme: Theme) => ({
-        position: 'absolute',
-        top: 8,
-        right: 8,
-        bgcolor: theme.palette.primary.main,
-        color: 'white',
-        width: 24,
-        height: 24,
-        borderRadius: '50%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    }),
     equalizerSection: {
         mb: 4,
     },
@@ -59,6 +37,7 @@ export const styles = {
         color: theme.palette.text.secondary,
         textAlign: 'center',
         minWidth: 30,
+        mb: 2
     }),
     resetButton: {
         mr: 2,

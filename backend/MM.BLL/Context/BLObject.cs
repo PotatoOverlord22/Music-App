@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System.Security.Claims;
 
 namespace MM.BLL.Context
 {
@@ -33,6 +34,11 @@ namespace MM.BLL.Context
         {
             blContext.Logger.Error(ex, message);
             throw new Exception(exceptionMessage ?? message);
+        }
+
+        protected string? GetCurrentUserAuth0Id()
+        {
+            return blContext.HttpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         }
         #endregion Methods
     }

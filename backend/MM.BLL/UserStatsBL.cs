@@ -66,7 +66,7 @@ namespace MM.BLL
 
         private async Task<(User user, UserStats stats)> GetCurrentUserAndStatsAsync()
         {
-            string? auth0Id = blContext.HttpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            string? auth0Id = GetCurrentUserAuth0Id();
             if (string.IsNullOrEmpty(auth0Id))
             {
                 LogAndThrowError(new Exception(), "User is not authenticated or Auth0 ID is missing.");
