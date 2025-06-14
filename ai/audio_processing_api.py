@@ -9,6 +9,7 @@ from scipy import signal
 from scipy.stats import hmean
 from io import BytesIO
 import pickle
+import json
 
 from audio_processing_service import (
     load_audio,
@@ -43,6 +44,9 @@ def process_audio():
     overlap = float(request.form.get('overlap', 5))
     print(f"params with recom: {intensity=}, {segment_duration=}, {overlap=}")
 
+    genre_presets = load_genre_presets_from_request(request)
+    print(f"genre_presets: {genre_presets}")
+
     try:
         with tempfile.NamedTemporaryFile(suffix='.mp3', delete=False) as temp_input:
             file.save(temp_input.name)
@@ -53,7 +57,8 @@ def process_audio():
                 audio, sr, center_freqs, 
                 segment_duration=segment_duration, 
                 overlap=overlap, 
-                intensity=intensity
+                intensity=intensity,
+                genre_presets=genre_presets
             )
             
             with tempfile.NamedTemporaryFile(suffix='.mp3', delete=False) as temp_output:
@@ -87,6 +92,9 @@ def process_audio_with_recommendation():
     overlap = float(request.form.get('overlap', 5.0))
     bias = float(request.form.get('context_bias', 0.2))
     use_recommendation = request.form.get('use_recommendation', 'true').lower() == 'true'
+    genre_presets = load_genre_presets_from_request(request)
+    print(f"genre_presets: {genre_presets}")
+
     print(f"params with recom: {user_mood=}, {user_time=}, {bias=}, {intensity=}, {segment_duration=}, {overlap=}, {use_recommendation=}")
     
     try:
@@ -126,14 +134,16 @@ def process_audio_with_recommendation():
                 segment_duration=segment_duration, 
                 overlap=overlap, 
                 intensity=intensity,
-                bias=bias
+                bias=bias,
+                genre_presets=genre_presets
             )
         else:
             processed_audio = process_audio_in_segments(
                 audio, sr, center_freqs, 
                 segment_duration=segment_duration, 
                 overlap=overlap, 
-                intensity=intensity
+                intensity=intensity,
+                genre_presets=genre_presets
             )
         
         with tempfile.NamedTemporaryFile(suffix='.mp3', delete=False) as temp_output:
@@ -164,6 +174,9 @@ def recommend_genre_endpoint():
     file = request.files['file']
     if file.filename == '':
         return jsonify({'error': 'No file selected'}), 400
+    
+    genre_presets = load_genre_presets_from_request(request)
+    print(f"genre_presets: {genre_presets}")
     
     user_mood = request.form.get('mood')
     user_time = request.form.get('time_of_day')
@@ -207,11 +220,41 @@ def recommend_genre_endpoint():
         import traceback
         print(traceback.format_exc())
         return jsonify({'error': str(e)}), 500
+    
+def load_genre_presets_from_request(request):
+    if 'genre_presets' in request.form:
+        genre_presets_json = request.form.get('genre_presets')
+    elif 'genre_presets' in request.files:
+        file = request.files['genre_presets']
+        genre_presets_json = file.read().decode('utf-8') # Read content from file
+    else:
+        return None
+    try:
+        list_of_presets = json.loads(genre_presets_json)
 
-@app.route('/health', methods=['GET'])
-def health_check():
-    """Simple health check endpoint to verify the API is running."""
-    return jsonify({'status': 'healthy', 'message': 'Audio processing API is operational'})
+        transformed_presets = {}
+        for preset_item in list_of_presets:
+            genre_name = preset_item.get('GenreName')
+            values = preset_item.get('Values', [])
+            
+            gains = [0.0] * len(values)
+            for val in values:
+                band_index = val.get('BandIndex')
+                gain = val.get('Gain')
+                if band_index is not None and gain is not None and 0 <= band_index < len(gains):
+                    gains[band_index] = float(gain)
+            
+            if genre_name:
+                transformed_presets[genre_name.lower()] = gains
+
+        return transformed_presets
+
+    except json.JSONDecodeError as e:
+        print(f"Failed to parse genre_presets JSON: {e}")
+        return None
+    except Exception as e:
+        print(f"An unexpected error occurred while processing genre_presets: {e}")
+        return None
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)

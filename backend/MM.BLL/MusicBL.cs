@@ -2,10 +2,13 @@
 using Microsoft.AspNetCore.Http;
 using MM.BLL.Context;
 using MM.BLL.Mappers;
+using MM.DAL.Models;
 using MM.Library.Constants;
 using MM.Library.Enums;
 using MM.Library.Utils;
+using Newtonsoft.Json;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 
 namespace MM.BLL
 {
@@ -151,6 +154,29 @@ namespace MM.BLL
                 }
             }
 
+            string? auth0Id = blContext.HttpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(auth0Id))
+            {
+                LogAndThrowValidationException("Auth0 ID not found for the current user.");
+            }
+
+            List<GenrePreset> genrePresets = await blContext.DalContext.GenrePresetDAL.GetGenrePresetsByUserAuth0Id(auth0Id!);
+
+            if (genrePresets.Count == 0)
+            {
+                genrePresets = GetAllDefaultGenrePresets();
+            }
+
+            var presetsToSerialize = genrePresets.Select(gp => new
+            {
+                gp.GenreName,
+                Values = gp.Values.Select(v => new { v.BandIndex, v.Gain }).ToList()
+            }).ToList();
+
+            string genrePresetsJson = JsonConvert.SerializeObject(presetsToSerialize);
+            multipart.Add(new StringContent(genrePresetsJson), "genre_presets", "genre_presets.json");
+
             if (file != null && file.Length > 0)
             {
                 using var ms = new MemoryStream();
@@ -178,6 +204,55 @@ namespace MM.BLL
 
             return response;
         }
+
+        private static GenrePreset? GetDefaultGenrePreset(string genreName)
+        {
+            if (string.IsNullOrWhiteSpace(genreName))
+            {
+                return null;
+            }
+
+            string normalizedGenreName = genreName.ToLower();
+
+            if (DefaultGenrePresets.Presets.TryGetValue(normalizedGenreName, out float[]? gains))
+            {
+                var genrePreset = new GenrePreset
+                {
+                    Guid = Guid.NewGuid(),
+                    GenreName = genreName,
+                    Values = new List<GenrePresetValue>()
+                };
+
+                for (int i = 0; i < gains.Length; i++)
+                {
+                    genrePreset.Values.Add(new GenrePresetValue
+                    {
+                        Guid = Guid.NewGuid(),
+                        BandIndex = i,
+                        Gain = gains[i],
+                        GenrePresetGuid = genrePreset.Guid
+                    });
+                }
+                return genrePreset;
+            }
+
+            return null;
+        }
+
+        private static List<GenrePreset> GetAllDefaultGenrePresets()
+        {
+            var allPresets = new List<GenrePreset>();
+            foreach (var entry in DefaultGenrePresets.Presets)
+            {
+                var preset = GetDefaultGenrePreset(entry.Key);
+                if (preset != null)
+                {
+                    allPresets.Add(preset);
+                }
+            }
+            return allPresets;
+        }
+
         #endregion Methods
     }
 }

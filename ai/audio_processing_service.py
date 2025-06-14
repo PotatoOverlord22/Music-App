@@ -77,9 +77,9 @@ def create_eq_profile(num_bands=10, min_freq=20, max_freq=22050, sr=44100):
     
     return center_freqs, gains
 
-def apply_eq_preset(preset_name, intensity=1.0):
-    """Return gain values for common EQ presets."""
-    genre_presets = {
+def apply_eq_preset(preset_name, intensity=1.0, dynamic_genre_presets=None):
+    """Return gain values for EQ presets, prioritizing dynamic_genre_presets."""
+    current_genre_presets = dynamic_genre_presets if dynamic_genre_presets is not None else {
         'blues':     [-1,  0,  2,  2,  1,  0, -1,  0,  1,  1],
         'classical': [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
         'country':   [ 0,  1,  1,  2,  1,  0,  0,  0,  0,  0],
@@ -92,10 +92,10 @@ def apply_eq_preset(preset_name, intensity=1.0):
         'rock':      [ 1,  1,  0,  0,  1,  1,  0,  0,  1,  1]
     }
     
-    if preset_name in genre_presets:
-        return np.array(genre_presets[preset_name]) * intensity
+    if preset_name in current_genre_presets:
+        return np.array(current_genre_presets[preset_name]) * intensity
     else:
-        print(f"Preset '{preset_name}' not found. Defaulting to no change.")
+        print(f"Preset '{preset_name}' not found in provided presets. Defaulting to no change.")
         return np.zeros(10)
 
 def apply_eq_fft(audio, sr, center_freqs, gains):
@@ -119,7 +119,7 @@ def apply_eq_fft(audio, sr, center_freqs, gains):
     eq_audio = librosa.istft(eq_stft, length=len(audio))
     return eq_audio
 
-def process_audio_in_segments(audio, sr, center_freqs, segment_duration=30, overlap=3, intensity=1.0):
+def process_audio_in_segments(audio, sr, center_freqs, segment_duration=30, overlap=3, intensity=1.0, genre_presets=None):
     """Process audio in segments with overlap to avoid artifacts at boundaries."""
     segment_length = int(segment_duration * sr)
     overlap_length = int(overlap * sr)
@@ -155,7 +155,7 @@ def process_audio_in_segments(audio, sr, center_freqs, segment_duration=30, over
         genre_preset = genres[genre_index]
         print(f"Predicted genre for segment {i+1}: {genre_preset}")
 
-        gains = apply_eq_preset(genre_preset, intensity=intensity)
+        gains = apply_eq_preset(genre_preset, intensity=intensity, dynamic_genre_presets=genre_presets)
         processed_segment = apply_eq_fft(segment, sr, center_freqs, gains)
         
         window = np.ones(len(segment))
@@ -225,7 +225,7 @@ def one_hot_encode(value, categories):
     return vec
 
 def process_audio_with_genre_bias(audio, sr, center_freqs, recommended_genre=None, 
-                                segment_duration=30, overlap=3, intensity=1.0, bias=0.2):
+                                segment_duration=30, overlap=3, intensity=1.0, bias=0.2, genre_presets=None):
     """
     Process audio in segments with overlap, biasing towards the recommended genre.
     This combines CONEqNet predictions with the recommendation model's genre suggestion.
@@ -243,7 +243,7 @@ def process_audio_with_genre_bias(audio, sr, center_freqs, recommended_genre=Non
     fade_in = np.linspace(0, 1, fade_len)
     fade_out = np.linspace(1, 0, fade_len)
     
-    recommended_gains = apply_eq_preset(recommended_genre, intensity=intensity)
+    recommended_gains = apply_eq_preset(recommended_genre, intensity=intensity, dynamic_genre_presets=genre_presets)
     
     print(f"Processing audio in {num_segments} segments with genre bias towards {recommended_genre}...")
     for i in range(num_segments):
@@ -262,7 +262,7 @@ def process_audio_with_genre_bias(audio, sr, center_freqs, recommended_genre=Non
         genre_index = np.argmax(pred)
         predicted_genre = GENRE_LIST[genre_index]
         print(f"Predicted genre for segment {i+1}: {predicted_genre}")
-        predicted_gains = apply_eq_preset(predicted_genre, intensity=intensity)
+        predicted_gains = apply_eq_preset(predicted_genre, intensity=intensity, dynamic_genre_presets=genre_presets)
         
         blended_gains = bias * recommended_gains + (1-bias) * predicted_gains
         

@@ -18,13 +18,13 @@ namespace MM.DAL
             return genrePreset;
         }
 
-        public async Task<GenrePreset?> GetGenrePresetByUserAuth0Id(string auth0Id)
+        public async Task<List<GenrePreset>> GetGenrePresetsByUserAuth0Id(string auth0Id)
         {
             return await dalContext.DatabaseContext.GenrePresets
-                    .Include(gp => gp.Values)
-                    .Include(gp => gp.User)
-                    .Where(gp => gp.User.Auth0Id == auth0Id)
-                    .FirstOrDefaultAsync();
+                        .Include(gp => gp.Values)
+                        .Include(gp => gp.User)
+                        .Where(gp => gp.User.Auth0Id == auth0Id)
+                        .ToListAsync();
         }
         #endregion Methods
     }
