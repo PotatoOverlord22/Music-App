@@ -14,6 +14,7 @@ import { styles } from "../ProtectedRoute/ProtectedRoute.styles";
 import { TopBar } from "../TopBar/TopBar";
 import { createCustomTheme } from "./Theme";
 import { GlobalDataProvider } from "../../library/Contexts/GlobalContext/globalContext";
+import ConfigurePresetsPage from "../../pages/ConfigurePresetsPage/configurePresetsPage";
 
 export const AppContent = () => {
     const { isLoading, getAccessTokenSilently } = useAuth0();
@@ -68,6 +69,13 @@ export const AppContent = () => {
                                             element={
                                                 <ProtectedRoute>
                                                     <TransformMusicPage />
+                                                </ProtectedRoute>
+                                            }
+                                        />
+                                        <Route path={InternalRoutes.ConfigurePresets}
+                                            element={
+                                                <ProtectedRoute>
+                                                    <ConfigurePresetsPage />
                                                 </ProtectedRoute>
                                             }
                                         />

@@ -74,8 +74,29 @@ def create_eq_profile(num_bands=10, min_freq=20, max_freq=22050, sr=44100):
     max_freq = min(max_freq, sr // 2 - 1)
     center_freqs = np.logspace(np.log10(min_freq), np.log10(max_freq), num_bands)
     gains = np.zeros(num_bands)
-    
+
     return center_freqs, gains
+
+def apply_eq_fft(audio, sr, center_freqs, gains):
+    """Apply equalization using FFT-based method."""
+    n_fft = 2048
+    stft = librosa.stft(audio, n_fft=n_fft)
+    magnitude, phase = librosa.magphase(stft)
+    freq_bins = librosa.fft_frequencies(sr=sr, n_fft=n_fft)
+    
+    eq_curve = np.ones_like(freq_bins)
+    
+    for center_freq, gain_db in zip(center_freqs, gains):
+        gain_linear = 10 ** (gain_db / 20)
+        lower_freq = center_freq / np.sqrt(2)
+        upper_freq = center_freq * np.sqrt(2)
+        band_indices = np.where((freq_bins >= lower_freq) & (freq_bins <= upper_freq))
+        eq_curve[band_indices] *= gain_linear
+    
+    eq_magnitude = magnitude * eq_curve[:, np.newaxis]
+    eq_stft = eq_magnitude * phase
+    eq_audio = librosa.istft(eq_stft, length=len(audio))
+    return eq_audio
 
 def apply_eq_preset(preset_name, intensity=1.0, dynamic_genre_presets=None):
     """Return gain values for EQ presets, prioritizing dynamic_genre_presets."""
@@ -97,27 +118,6 @@ def apply_eq_preset(preset_name, intensity=1.0, dynamic_genre_presets=None):
     else:
         print(f"Preset '{preset_name}' not found in provided presets. Defaulting to no change.")
         return np.zeros(10)
-
-def apply_eq_fft(audio, sr, center_freqs, gains):
-    """Apply equalization using FFT-based method."""
-    n_fft = 2048  # Next power of 2 for efficient FFT
-    stft = librosa.stft(audio, n_fft=n_fft)
-    magnitude, phase = librosa.magphase(stft)
-    freq_bins = librosa.fft_frequencies(sr=sr, n_fft=n_fft)
-    
-    eq_curve = np.ones_like(freq_bins)
-    
-    for center_freq, gain_db in zip(center_freqs, gains):
-        gain_linear = 10 ** (gain_db / 20)
-        lower_freq = center_freq / np.sqrt(2)
-        upper_freq = center_freq * np.sqrt(2)
-        band_indices = np.where((freq_bins >= lower_freq) & (freq_bins <= upper_freq))
-        eq_curve[band_indices] *= gain_linear
-    
-    eq_magnitude = magnitude * eq_curve[:, np.newaxis]
-    eq_stft = eq_magnitude * phase
-    eq_audio = librosa.istft(eq_stft, length=len(audio))
-    return eq_audio
 
 def process_audio_in_segments(audio, sr, center_freqs, segment_duration=30, overlap=3, intensity=1.0, genre_presets=None):
     """Process audio in segments with overlap to avoid artifacts at boundaries."""
