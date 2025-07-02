@@ -15,7 +15,7 @@ namespace MM.BLL
     public class MusicBL : BLObject
     {
         #region Members
-        private static readonly string flaskBaseUrl = "http://localhost:5000";
+        private static readonly string flaskBaseUrl = Environment.GetEnvironmentVariable("AI_API_BASE_URL") ?? "http://localhost:8000";
         private readonly HttpClient httpClient;
 
         #endregion Members

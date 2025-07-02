@@ -1,0 +1,46 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      args:
+          - VITE_AUTH_CLIENTID=${VITE_AUTH_CLIENTID}
+          - VITE_TENANT_ID=${VITE_TENANT_ID}
+          - VITE_AUTH0_DOMAIN=${VITE_AUTH0_DOMAIN}
+          - VITE_AUTH0_CLIENT_ID=${VITE_AUTH0_CLIENT_ID}
+          - VITE_AUTH0_CLIENT_SECRET=${VITE_AUTH0_CLIENT_SECRET}
+          - VITE_AUTH0_AUDIENCE=${VITE_AUTH0_AUDIENCE}
+          - VITE_API_URL=${VITE_API_URL}
+    ports:
+      - "4173:4173"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "5000:5000"
+    env_file: .env
+    depends_on:
+      - ai
+      - db
+
+  ai:
+    build:
+      context: ./ai
+    ports:
+      - "8000:8000"
+    env_file: .env
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: ${SA_PASSWORD}
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+
+volumes:
+  sql_data:

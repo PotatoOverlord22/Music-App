@@ -1,7 +1,7 @@
 import { Genre } from "../models/Genre";
 
 export const UNDEFINED_CONTEXT_ERROR_MESSAGE: string = "Context is undefined.";
-export const BACKEND_URL: string = "https://localhost:7018";
+export const BACKEND_URL: string = import.meta.env.VITE_API_URL ?? "https://localhost:7018";
 export const GENERAL_DATA_CONTROLLER: string = "GeneralData";
 
 export const DEFAULT_PRESETS: Record<Genre, number[]> = {

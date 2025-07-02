@@ -6,7 +6,7 @@ namespace MM.DAL.Context
     public class DatabaseContext : DbContext
     {
         #region Members
-        private static readonly string connectionString = "data source=DESKTOP-CBK53R0\\SQLEXPRESS;initial catalog=MusicMania;trusted_connection=true;TrustServerCertificate=True";
+        private static readonly string connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") ?? "Server=localhost;Database=MusicMania;Trusted_Connection=True;";
         #endregion Members
 
         #region Properties
