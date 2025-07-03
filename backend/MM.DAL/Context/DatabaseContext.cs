@@ -6,7 +6,7 @@ namespace MM.DAL.Context
     public class DatabaseContext : DbContext
     {
         #region Members
-        private static readonly string connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") ?? "Server=localhost;Database=MusicMania;Trusted_Connection=True;";
+        private static readonly string connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") ?? "data source=DESKTOP-CBK53R0\\SQLEXPRESS;initial catalog=MusicMania;trusted_connection=true;TrustServerCertificate=True";
         #endregion Members
 
         #region Properties
@@ -26,7 +26,14 @@ namespace MM.DAL.Context
         #region Methods
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(connectionString);
+            optionsBuilder.UseSqlServer(connectionString, sqlOptions =>
+            {
+                sqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: TimeSpan.FromSeconds(15),
+                    errorNumbersToAdd: null
+                    );
+            });
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

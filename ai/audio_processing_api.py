@@ -1,14 +1,6 @@
-import os
 import numpy as np
-import librosa
-import tensorflow as tf
-import soundfile as sf
 import tempfile
 from flask import Flask, request, send_file, jsonify
-from scipy import signal
-from scipy.stats import hmean
-from io import BytesIO
-import pickle
 import json
 
 from audio_processing_service import (
@@ -257,4 +249,4 @@ def load_genre_presets_from_request(request):
         return None
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host='0.0.0.0', port=8000, debug=False)

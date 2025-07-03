@@ -1,0 +1,27 @@
+# Dockerfile.migration
+FROM mcr.microsoft.com/dotnet/sdk:9.0
+WORKDIR /src
+
+# Copy project files - MUST include ALL projects referenced in the solution
+COPY *.sln ./
+COPY MM.API/*.csproj ./MM.API/
+COPY MM.DAL/*.csproj ./MM.DAL/
+COPY MM.BLL/*.csproj ./MM.BLL/
+COPY MM.Library/*.csproj ./MM.Library/
+
+# Restore dependencies
+RUN dotnet restore MM.sln
+
+# Copy source code
+COPY . .
+
+# Install EF tools
+RUN dotnet tool install --global dotnet-ef --version 9.0.*
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+# Copy wait script
+COPY wait-for-it.sh ./
+RUN chmod +x wait-for-it.sh
+
+# Migration command
+CMD ["sh", "-c", "./wait-for-it.sh db:1433 --timeout=60 -- dotnet ef database update --project MM.DAL/MM.DAL.csproj --startup-project MM.DAL/MM.DAL.csproj --verbose"]

@@ -1,0 +1,6 @@
+# .dockerignore
+Data/
+music/
+__pycache__/
+*.ipynb
+evaluation_results.csv

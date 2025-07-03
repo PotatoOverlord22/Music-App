@@ -3,11 +3,6 @@ import numpy as np
 import librosa
 import tensorflow as tf
 import soundfile as sf
-import tempfile
-from flask import Flask, request, send_file, jsonify
-from scipy import signal
-from scipy.stats import hmean
-from io import BytesIO
 import pickle
 
 
